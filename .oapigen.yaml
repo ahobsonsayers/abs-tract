@@ -1,0 +1,11 @@
+# oapi-codegen configuration
+# https://github.com/deepmap/oapi-codegen/blob/master/pkg/codegen/configuration.go
+package: server
+generate:
+  chi-server: true
+  strict-server: true
+  embedded-spec: true
+  models: true
+output: server/server.gen.go
+output-options:
+  skip-prune: true

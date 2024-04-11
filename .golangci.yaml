@@ -1,0 +1,34 @@
+# Docs: https://golangci-lint.run/usage/configuration/#config-file
+run:
+  go: "1.21"
+  timeout: 30m
+
+linters:
+  enable:
+    # Default linters: https://golangci-lint.run/usage/linters#enabled-by-default
+    - gofmt
+    - goimports
+    - revive
+    - stylecheck
+    - misspell
+    - unparam
+    - makezero
+
+linters-settings:
+  revive:
+    # https://golangci-lint.run/usage/linters#revive
+    rules:
+      - name: var-naming
+        arguments:
+          - ["ID", "JSON", "URL"] # Allow List
+          - [] # Deny List
+
+  stylecheck:
+    # https://golangci-lint.run/usage/linters/#stylecheck
+    checks:
+      - "*"
+      - "-ST1003" # Duplicate check of var-naming from revive
+
+  unparam:
+    # https://golangci-lint.run/usage/linters/#unparam
+    check-exported: true

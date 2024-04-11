@@ -1,0 +1,21 @@
+{
+  // ---- General Settings ----
+  // Editor Settings
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+
+  // ---- Golang Settings ----
+  // https://github.com/golang/vscode-go/blob/master/docs/settings.md
+  // The gopls language server should be used.
+  // This provides most utitlites and settings itself, reducing need for configuration
+  "go.useLanguageServer": true,
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": ["--fast"],
+  "go.lintOnSave": "package",
+  "go.toolsManagement.autoUpdate": true,
+  "go.buildTags": "",
+
+  // Code Spell Checker
+  "cSpell.words": ["goodreads"]
+}
