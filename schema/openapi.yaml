@@ -122,18 +122,21 @@ components:
         series:
           type: array
           items:
-            type: object
-            required:
-              - series
-            properties:
-              series:
-                type: string
-              sequence:
-                type: integer
-                format: int64
+            $ref: "#/components/schemas/SeriesMetadata"
         language:
           type: string
         duration:
           type: integer
-          format: int64
+          format: int
           description: Duration in seconds
+
+    SeriesMetadata:
+      type: object
+      required:
+        - series
+      properties:
+        series:
+          type: string
+        sequence:
+          type: integer
+          format: int

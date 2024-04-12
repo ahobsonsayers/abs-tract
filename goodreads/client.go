@@ -75,6 +75,22 @@ func (c *GoodreadsClient) Get(
 	return nil
 }
 
+// GetBook gets a book by its id.
+// https://www.goodreads.com/api/index#book.show
+func (c *GoodreadsClient) GetBook(ctx context.Context, bookId string) (Book, error) {
+	queryParams := map[string]string{"id": bookId}
+
+	var result struct {
+		Book Book `xml:"book"`
+	}
+	err := c.Get(ctx, "book/show.xml", queryParams, &result)
+	if err != nil {
+		return Book{}, err
+	}
+
+	return result.Book, nil
+}
+
 // SearchBook search for a book by its title. An author can be specified to give better results.
 // https://www.goodreads.com/api/index#book.title
 func (c *GoodreadsClient) SearchBook(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
@@ -92,20 +108,4 @@ func (c *GoodreadsClient) SearchBook(ctx context.Context, bookTitle string, book
 	}
 
 	return result.Works, nil
-}
-
-// GetBook gets a book by its title.
-// https://www.goodreads.com/api/index#book.show
-func (c *GoodreadsClient) GetBook(ctx context.Context, bookId string) (Book, error) {
-	queryParams := map[string]string{"id": bookId}
-
-	var result struct {
-		Book Book `xml:"book"`
-	}
-	err := c.Get(ctx, "book/show.xml", queryParams, &result)
-	if err != nil {
-		return Book{}, err
-	}
-
-	return result.Book, nil
 }

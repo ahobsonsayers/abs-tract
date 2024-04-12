@@ -1,0 +1,21 @@
+# Ignore certain directories
+.git
+.github
+.vscode
+bin
+build
+scripts
+
+# Ignore certain files (same as .gitignore)
+.env
+.secrets
+.~lock*
+*.DS_Store
+*debug_bin*
+scratch*
+
+# Ignore certain additional files
+.dockerignore
+Dockerfile
+*_test.go
+Taskfile.yml

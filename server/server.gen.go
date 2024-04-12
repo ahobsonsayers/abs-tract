@@ -35,20 +35,23 @@ type BookMetadata struct {
 	Description *string `json:"description,omitempty"`
 
 	// Duration Duration in seconds
-	Duration      *int64    `json:"duration,omitempty"`
-	Genres        *[]string `json:"genres,omitempty"`
-	Isbn          *string   `json:"isbn,omitempty"`
-	Language      *string   `json:"language,omitempty"`
-	Narrator      *string   `json:"narrator,omitempty"`
-	PublishedYear *string   `json:"publishedYear,omitempty"`
-	Publisher     *string   `json:"publisher,omitempty"`
-	Series        *[]struct {
-		Sequence *int64 `json:"sequence,omitempty"`
-		Series   string `json:"series"`
-	} `json:"series,omitempty"`
-	Subtitle *string   `json:"subtitle,omitempty"`
-	Tags     *[]string `json:"tags,omitempty"`
-	Title    string    `json:"title"`
+	Duration      *int              `json:"duration,omitempty"`
+	Genres        *[]string         `json:"genres,omitempty"`
+	Isbn          *string           `json:"isbn,omitempty"`
+	Language      *string           `json:"language,omitempty"`
+	Narrator      *string           `json:"narrator,omitempty"`
+	PublishedYear *string           `json:"publishedYear,omitempty"`
+	Publisher     *string           `json:"publisher,omitempty"`
+	Series        *[]SeriesMetadata `json:"series,omitempty"`
+	Subtitle      *string           `json:"subtitle,omitempty"`
+	Tags          *[]string         `json:"tags,omitempty"`
+	Title         string            `json:"title"`
+}
+
+// SeriesMetadata defines model for SeriesMetadata.
+type SeriesMetadata struct {
+	Sequence *int   `json:"sequence,omitempty"`
+	Series   string `json:"series"`
 }
 
 // SearchParams defines parameters for Search.
@@ -365,18 +368,18 @@ func (sh *strictHandler) Search(w http.ResponseWriter, r *http.Request, params S
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8RVTW/bSAz9KwJ3j4albLJ70C3ZFqiRpCnycWgDoxiPaGkSaUbhUAHcQP+94EiOKltJ",
-	"W/SQkyWRfPx8z0+gXVU7i5Y9pE/gdYGVCo8nzt2fI6tMsZL3mlyNxAaDVXlj5XftqFIMafdhBrypEVLw",
-	"TMbm0M5ANVw4Etc9k3aPGCwZek2mZuMspHBzeRaxi7jAKHhEplI5TmGP4iYSZA2prXGc411viYyNPGpn",
-	"Mw+zoRlj+b+jIaOxjDmSQOZoqZuAYaz8ZNr+gyJSG3k3fjWeVfgw0U+pbN5Ir1OoVvD4hVHWzao0vsDs",
-	"M6rXPaatHsnstDXet8eHBq3GcR8vjmnA20nVzoDwoTGEGaS3W7/lM4Zb3aHmqSn6ZsWGy+nhsMp/cykv",
-	"Ye0U2Lnt1xd61A0Z3lwJZ3pW1ObrPW5CJXJmBaoMCWR5lUQf31x/uLhcfDm+Xlx8HAananOKG2gF1di1",
-	"k/jSaLQ+VNgHny+uYQYNlQLMXPs0jl2N1ruGNM4d5XEf5GPxHZqE/xvProq2dI4+kXs0XWWPSL7jRDI/",
-	"mCcSJaCqNpDC4TyZJzCDWnERGow9KtKFPObI+7y6CuZo7ShaOXcvpJIrClxbZM8OAZJUhYzkIb3tx/XQ",
-	"IG2GaW1fh30wNTjrRWpyd9NAvQa9FrmUNL52Mj2x/5Mk8qOdZbTc7bYujQ6dxHe+E5UBb8yWSrEudvj0",
-	"N+EaUvgrHhQ37uU2Hmnt3rG2+9e3K35wcSpxR39UNRJNysuv5D9RWXQpGuG5K+TgjQq5sd22zTfMpJJ/",
-	"32wkC8tIVpXRFZL8jb0PWD8qR7j8Z824XcoV+qaqFG2muNT+NDYk6gg1ruXMaVVO8r/Tk1LshfOcHiZJ",
-	"Au2y/R4AAP//aDO7cxoIAAA=",
+	"H4sIAAAAAAAC/8RVUU/bWgz+K5HvfayacLl7yRtsk1YBY6LwsKFqOj1xkwPJOcHHB6lD/e+TT0Kz0sCG",
+	"9sBTk9j+bH/25z6Adk3rLFr2kD+A1xU2Kj4eO3d7hqwKxUreW3ItEhuMVuWNld+Vo0Yx5N2HCfC6RcjB",
+	"MxlbwmYCKnDlSFz3TNrdY7QU6DWZlo2zkMPVxWnCLuEKk+iRmEaVOIa9EzeSoAikHo27OT70lsTYxKN2",
+	"tvAwGZoxlod8xjKWSAJYoqWuf8PY+NGk/QdFpNbybvxyl6n4YaSbWtkySKdjqFbw+Bki27Csja+w+Irq",
+	"ZY9xq0cyT9r6l3AFOfyTDvuR9suRzqP7djdGevZhyYbr8VZYla+k8DmszQQI74IhLCC/7t0W23i3vEHN",
+	"AvCk4r1t9ngX0GrcndMzSzCw9XI5vd9+PRFDBzK8ngulvaJa8/0W15EZWdEKVYEEMvpGoo+uLj+dX8y+",
+	"HV3Ozj8PhanWnOAaNoJq7MpJfG00Wh+76YPPZpcwgUC1ADO3Pk9T16L1LpDGqaMy7YN8Kr4D6fA+eHZN",
+	"8khe8oXcvekqu0fynZ6y6cE0kygBVa2BHA6n2TSDCbSKq9hg6lGRruSxRN7X5Dyak5WjZOncrQhSZhR1",
+	"Oiu2DhGSVIOM5CG/7um6C0jrga3H12EgTAEn/YEbHd44UH+/XopcSBrfOmFP7P9lmfxoZxktd7Nta6Nj",
+	"J+mN7w7SgLe7i41iXb1CjTt3ek88m/3te3o44fxE4v7/q6qRaPQ4/Un+Y1UkF6JAz10hB29UyJXtpm1+",
+	"YCGVvHszSmaWkayqkzmS/AV+jFi/Xo64+dubcb2QLfShaRStx7S0+W1sTNQJareWU6dVPar/7p7UYq+c",
+	"5/wwyzLYLDY/AwAA//9AInK8VggAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

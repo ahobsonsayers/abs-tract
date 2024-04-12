@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  abs-goodreads:
+    image: ahobsonsayers/abs-goodreads
+    build:
+      context: .
+    container_name: abs-goodreads
+    ports:
+      - "5555:5555"
+    restart: unless-stopped

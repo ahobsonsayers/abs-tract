@@ -1,0 +1,42 @@
+# Docs: https://taskfile.dev/#/usage
+version: "3"
+
+tasks:
+  lint:
+    cmds:
+      - golangci-lint run
+
+  format:
+    cmds:
+      - go fmt ./...
+
+  test:
+    cmds:
+      - |
+        go clean -testcache
+        go test ./...
+
+  build:
+    cmds:
+      - go build -v -o bin/abs-goodreads
+
+  build:docker:
+    cmds:
+      - docker build . -t ahobsonsayers/abs-goodreads
+
+  run:
+    cmds:
+      - go run .
+
+  run:docker:
+    deps: [build:docker]
+    cmds:
+      - |
+        docker run --rm \
+          --name abs-goodreads \
+          -p 5555:5555 \
+          ahobsonsayers/abs-goodreads
+
+  run:docker:compose:
+    cmds:
+      - docker compose up

@@ -5,24 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/ahobsonsayers/audiobookshelf-goodreads/goodreads"
+	"github.com/ahobsonsayers/abs-goodreads/goodreads"
 	"github.com/stretchr/testify/require"
 )
 
 const TheHobbitBookId = "5907"
-
-func TestSearchBook(t *testing.T) {
-	client := goodreads.NewClient(http.DefaultClient, nil, nil)
-
-	theHobbitSearchQuery := "The Hobbit"
-	works, err := client.SearchBook(context.Background(), theHobbitSearchQuery, nil)
-	require.NoError(t, err)
-
-	// Check first book returned
-	book := works[0].Work
-	require.Equal(t, "The Hobbit", book.Title)
-	require.Equal(t, "J.R.R. Tolkien", works[0].Authors[0].Name)
-}
 
 func TestGetBook(t *testing.T) {
 	client := goodreads.NewClient(http.DefaultClient, nil, nil)
@@ -33,4 +20,22 @@ func TestGetBook(t *testing.T) {
 	require.Equal(t, "The Hobbit", book.Work.Title)
 	require.Equal(t, TheHobbitBookId, book.BestEdition.Id)
 	require.Equal(t, "J.R.R. Tolkien", book.Authors[0].Name)
+	require.Equal(t, "The Lord of the Rings", book.Series[0].Series.Title)
+	require.Equal(t, 0, *book.Series[0].BookPosition)
+}
+
+func TestSearchBook(t *testing.T) {
+	client := goodreads.NewClient(http.DefaultClient, nil, nil)
+
+	theHobbitSearchQuery := "The Hobbit"
+	books, err := client.SearchBook(context.Background(), theHobbitSearchQuery, nil)
+	require.NoError(t, err)
+
+	// Check first book returned
+	book := books[0]
+	require.Equal(t, "The Hobbit", book.Work.Title)
+	require.Equal(t, TheHobbitBookId, book.BestEdition.Id)
+	require.Equal(t, "J.R.R. Tolkien", book.Authors[0].Name)
+	require.Equal(t, "The Lord of the Rings", book.Series[0].Series.Title)
+	require.Equal(t, 0, book.Series[0].BookPosition)
 }
