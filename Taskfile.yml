@@ -22,7 +22,7 @@ tasks:
 
   build:docker:
     cmds:
-      - docker build . -t ahobsonsayers/abs-goodreads
+      - docker build . -t arranhs/abs-goodreads
 
   run:
     cmds:
@@ -35,8 +35,12 @@ tasks:
         docker run --rm \
           --name abs-goodreads \
           -p 5555:5555 \
-          ahobsonsayers/abs-goodreads
+          arranhs/abs-goodreads
 
   run:docker:compose:
     cmds:
       - docker compose up
+
+  push:docker:
+    cmds:
+      - docker push arranhs/abs-goodreads
