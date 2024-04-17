@@ -21,6 +21,7 @@ func init() {
 // Used to allow extraction of genres from goodreads shelves.
 // TODO is there a better way to recognise genres?
 var genreShelves = mapset.NewSet(
+	"adventure",
 	"art",
 	"biography",
 	"business",
@@ -37,6 +38,7 @@ var genreShelves = mapset.NewSet(
 	"fiction",
 	"gay-and-lesbian",
 	"graphic-novel",
+	"high-fantasy",
 	"historical-fiction",
 	"historical",
 	"history",
