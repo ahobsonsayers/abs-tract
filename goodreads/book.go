@@ -4,10 +4,6 @@ import (
 	"encoding/xml"
 	"math"
 	"strings"
-
-	mapset "github.com/deckarep/golang-set/v2"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 type Book struct {
@@ -102,69 +98,6 @@ func (s *Series) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	// Cleanup some fields
 	s.Title = strings.TrimSpace(s.Title)
 	s.Description = strings.TrimSpace(s.Description)
-
-	return nil
-}
-
-type Genres []string
-
-// None exhaustive list of popular shelves that are known to not be genres.
-// Used to allow extraction of genres from goodreads shelves.
-// TODO is there a better way to recognise genres?
-var nonGenreShelves = mapset.NewSet(
-	"audiobook",
-	"audiobooks",
-	"books-i-own",
-	"currently-reading",
-	"default",
-	"favourites",
-	"library",
-	"literature",
-	"my-books",
-	"my-library",
-	"novels",
-	"owned-books",
-	"owned",
-	"re-read",
-	"series",
-	"to-read",
-)
-
-func (g *Genres) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	// Genre aux is a struct matching the xml
-	var genresAux struct {
-		Genres []struct {
-			Name string `xml:"name,attr"`
-		} `xml:"shelf"`
-	}
-	err := d.DecodeElement(&genresAux, &start)
-	if err != nil {
-		return err
-	}
-
-	genres := make(Genres, 0, len(genresAux.Genres))
-	for _, genreAux := range genresAux.Genres {
-		genre := genreAux.Name
-
-		// Skip non genre shelves
-		if nonGenreShelves.Contains(genre) {
-			continue
-		}
-
-		// Make genre human readable
-		genre = strings.ReplaceAll(genre, "-", " ")
-		genreWords := strings.Fields(genre)
-		for i, word := range genreWords {
-			genreWords[i] = cases.Title(language.Und).String(word) // Capitalize each word
-		}
-		genre = strings.Join(genreWords, " ")
-
-		genres = append(genres, genre)
-		if len(genres) == 5 {
-			break
-		}
-	}
-	*g = genres
 
 	return nil
 }

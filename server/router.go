@@ -3,11 +3,13 @@ package server
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/httplog/v2"
 
 	oapimiddleware "github.com/oapi-codegen/nethttp-middleware"
 )
@@ -28,8 +30,21 @@ func NewRouter() (http.Handler, error) {
 	// Create router
 	chiRouter := chi.NewRouter()
 
-	// Use request validation middleware
 	chiRouter.Use(
+		// Logging middleware
+		// Includes recoverer middleware
+		httplog.RequestLogger(
+			httplog.NewLogger(
+				"abs-goodreads",
+				httplog.Options{
+					LogLevel:       slog.LevelDebug,
+					RequestHeaders: true,
+					Concise:        true,
+				},
+			),
+		),
+
+		// Request validation middleware
 		oapimiddleware.OapiRequestValidatorWithOptions(
 			spec,
 			&oapimiddleware.Options{

@@ -17,5 +17,5 @@
   "go.buildTags": "",
 
   // Code Spell Checker
-  "cSpell.words": ["goodreads"]
+  "cSpell.words": ["goodreads", "unmarshaller"]
 }
