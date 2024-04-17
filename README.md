@@ -27,4 +27,9 @@ and entering the following details:
 - URL: **\<your_address\>:5555**
 - Authorization Header Value: **\<leave this unset\>**
 
-See video below for walkthrough
+See video below for a walkthrough:
+
+https://github.com/ahobsonsayers/abs-goodreads/assets/32173585/54437af6-a17c-4458-bb82-479b183171da
+
+
+
