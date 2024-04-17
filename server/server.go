@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/ahobsonsayers/abs-goodreads/goodreads"
-	"github.com/ahobsonsayers/abs-goodreads/utils.go"
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 )
 
 type server struct{}

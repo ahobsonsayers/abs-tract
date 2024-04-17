@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/ahobsonsayers/abs-goodreads/goodreads"
-	"github.com/ahobsonsayers/abs-goodreads/utils.go"
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 )
 
 func GoodreadsBookToAudioBookShelfBook(goodreadsBook goodreads.Book) BookMetadata {
