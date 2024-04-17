@@ -31,6 +31,11 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.5
+
       - name: Run Lint
         run: task lint
 
