@@ -37,5 +37,5 @@ func TestSearchBook(t *testing.T) {
 	require.Equal(t, TheHobbitBookId, book.BestEdition.Id)
 	require.Equal(t, "J.R.R. Tolkien", book.Authors[0].Name)
 	require.Equal(t, "The Lord of the Rings", book.Series[0].Series.Title)
-	require.Equal(t, 0, book.Series[0].BookPosition)
+	require.Equal(t, 0, *book.Series[0].BookPosition)
 }
