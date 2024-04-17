@@ -36,11 +36,3 @@ tasks:
           --name abs-goodreads \
           -p 5555:5555 \
           arranhs/abs-goodreads
-
-  run:docker:compose:
-    cmds:
-      - docker compose up
-
-  push:docker:
-    cmds:
-      - docker push arranhs/abs-goodreads
