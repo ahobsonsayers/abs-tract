@@ -21,7 +21,7 @@ Test abs-goodreads is working using curl.
 ```bash
 ADDRESS=localhost
 curl --request GET \
-    --url "http://$ADDRESS:5555/search?query=The%20Hobbit&author=J.R.R.%20Tolkien"
+    --url "http://$ADDRESS:5555/search?query=The+Hobbit&author=J.R.R.+Tolkien"
 ```
 
 ## Setup
