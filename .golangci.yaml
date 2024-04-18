@@ -8,27 +8,32 @@ linters:
     # Default linters: https://golangci-lint.run/usage/linters#enabled-by-default
     - gofmt
     - goimports
+    - makezero
+    - misspell
     - revive
     - stylecheck
-    - misspell
     - unparam
-    - makezero
 
 linters-settings:
+  # https://golangci-lint.run/usage/linters#revive
   revive:
-    # https://golangci-lint.run/usage/linters#revive
+    enable-all-rules: true
     rules:
+      - name: add-constant
+        disabled: true
+
+      - name: line-length-limit
+        arguments: [120]
+
       - name: var-naming
         arguments:
           - ["ID", "JSON", "URL"] # Allow List
           - [] # Deny List
 
+  # https://golangci-lint.run/usage/linters/#stylecheck
   stylecheck:
-    # https://golangci-lint.run/usage/linters/#stylecheck
-    checks:
-      - "*"
-      - "-ST1003" # Duplicate check of var-naming from revive
+    checks: ["all", "-ST1003"] # ST1003 is a duplicate check of var-naming from revive
 
+  # https://golangci-lint.run/usage/linters/#unparam
   unparam:
-    # https://golangci-lint.run/usage/linters/#unparam
     check-exported: true

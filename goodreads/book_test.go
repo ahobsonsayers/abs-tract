@@ -34,6 +34,6 @@ func TestUnmarshalGenres(t *testing.T) {
 	err := xml.Unmarshal([]byte(xmlString), &genres)
 	require.NoError(t, err)
 
-	expectedGenres := goodreads.Genres{"Fantasy", "Classic", "Fiction", "Adventure", "Young Adult"}
+	expectedGenres := goodreads.Genres{"Fantasy", "Classic", "Fiction"}
 	require.Equal(t, expectedGenres, genres)
 }

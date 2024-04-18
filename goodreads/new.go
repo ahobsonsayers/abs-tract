@@ -8,7 +8,7 @@ import (
 // NewClient creates a new goodreads client.
 // If client is nil, the default http client will be used.
 // If api url is nil or uset, the default goodreads api url will be used
-func NewClient(client *http.Client, apiURL *string, apiKey *string) *GoodreadsClient {
+func NewClient(client *http.Client, apiURL *string, apiKey *string) *Client {
 	if client == nil {
 		client = http.DefaultClient
 	}
@@ -23,7 +23,7 @@ func NewClient(client *http.Client, apiURL *string, apiKey *string) *GoodreadsCl
 		apiKeyString = strings.TrimSpace(*apiKey)
 	}
 
-	return &GoodreadsClient{
+	return &Client{
 		client:     client,
 		apiRootUrl: apiUrlString,
 		apiKey:     apiKeyString,

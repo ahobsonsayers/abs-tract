@@ -73,30 +73,50 @@ var genreShelves = mapset.NewSet(
 type Genres []string
 
 func (g *Genres) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	// Shelves is a struct matching the goodread response xml
-	var shelves struct {
-		Shelf []struct {
+	// unmarshaller is a struct matching the goodreads response xml
+	var unmarshaller struct {
+		Shelves []struct { // nolint
 			Name string `xml:"name,attr"`
 		} `xml:"shelf"`
 	}
-	err := d.DecodeElement(&shelves, &start)
+	err := d.DecodeElement(&unmarshaller, &start)
 	if err != nil {
 		return err
 	}
 
-	genres := make(Genres, 0, 3)
-	seenGenreShelves := mapset.NewSetWithSize[string](3)
-	for _, shelf := range shelves.Shelf {
-		// Make shelf name singular for easier comparison
-		shelfName := inflection.Singular(shelf.Name)
+	// Get shelf names
+	shelfNames := make([]string, 0, len(unmarshaller.Shelves))
+	for _, shelf := range unmarshaller.Shelves {
+		shelfNames = append(shelfNames, shelf.Name)
+	}
+
+	// Convert shelf names to genres
+	genres := shelvesToGenres(shelfNames)
+
+	// Only use first (up to) three genres
+	if len(genres) < 3 {
+		*g = genres
+	} else {
+		*g = genres[:3]
+	}
+
+	return nil
+}
+
+func shelvesToGenres(shelves []string) []string {
+	genres := make(Genres, 0, len(shelves))
+	seenGenreShelves := mapset.NewSetWithSize[string](len(shelves))
+	for _, shelf := range shelves {
+		// Make shelf singular for easier comparison
+		shelf := inflection.Singular(shelf)
 
 		// Skip non genre shelves and already seen genre shelves
-		if !genreShelves.Contains(shelfName) || seenGenreShelves.Contains(shelfName) {
+		if !genreShelves.Contains(shelf) || seenGenreShelves.Contains(shelf) {
 			continue
 		}
 
 		// Get genre from shelf name, making it human readable
-		genre := strings.ReplaceAll(shelfName, "-", " ")
+		genre := strings.ReplaceAll(shelf, "-", " ")
 		genreWords := strings.Fields(genre)
 		for i, word := range genreWords {
 			genreWords[i] = cases.Title(language.Und).String(word) // Capitalize each word
@@ -104,14 +124,8 @@ func (g *Genres) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		genre = strings.Join(genreWords, " ")
 
 		genres = append(genres, genre)
-		seenGenreShelves.Add(shelfName)
-
-		// Only get top 3 genres
-		if len(genres) == 3 {
-			break
-		}
+		seenGenreShelves.Add(shelf)
 	}
-	*g = genres
 
-	return nil
+	return genres
 }

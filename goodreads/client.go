@@ -17,19 +17,19 @@ const (
 	DefaultAPIKey     = "ckvsiSDsuqh7omh74ZZ6Q" // Read only API key kindly provided by LazyLibrarian
 )
 
-var DefaultGoodreadsClient = &GoodreadsClient{
+var DefaultClient = &Client{
 	client:     http.DefaultClient,
 	apiRootUrl: DefaultAPIRootUrl,
 	apiKey:     DefaultAPIKey,
 }
 
-type GoodreadsClient struct {
+type Client struct {
 	client     *http.Client
 	apiRootUrl string
 	apiKey     string
 }
 
-func (c *GoodreadsClient) Get(
+func (c *Client) Get(
 	ctx context.Context,
 	apiPath string,
 	queryParams map[string]string,
@@ -82,7 +82,7 @@ func (c *GoodreadsClient) Get(
 
 // GetBookById gets a book by its id.
 // https://www.goodreads.com/api/index#book.show
-func (c *GoodreadsClient) GetBookById(ctx context.Context, bookId string) (Book, error) {
+func (c *Client) GetBookById(ctx context.Context, bookId string) (Book, error) {
 	queryParams := map[string]string{"id": bookId}
 
 	var result struct {
@@ -96,9 +96,36 @@ func (c *GoodreadsClient) GetBookById(ctx context.Context, bookId string) (Book,
 	return result.Book, nil
 }
 
+func (c *Client) GetBooksByIds(ctx context.Context, bookIds []string) ([]Book, error) {
+	books := make([]Book, len(bookIds))
+	var errs error
+	var wg sync.WaitGroup
+	for idx, bookId := range bookIds {
+		wg.Add(1)
+		go func(bookId string, idx int) {
+			defer wg.Done()
+
+			book, err := c.GetBookById(ctx, bookId)
+			if err != nil {
+				errs = errors.Join(errs, err)
+				return
+			}
+			books[idx] = book
+		}(bookId, idx)
+	}
+
+	wg.Wait()
+
+	if errs != nil {
+		return nil, errs
+	}
+
+	return books, nil
+}
+
 // GetBookByTitle gets a book by its title and optionally an author (which can give a better match)
 // https://www.goodreads.com/api/index#book.title
-func (c *GoodreadsClient) GetBookByTitle(ctx context.Context, bookTitle string, bookAuthor *string) (Book, error) {
+func (c *Client) GetBookByTitle(ctx context.Context, bookTitle string, bookAuthor *string) (Book, error) {
 	queryParams := map[string]string{"title": bookTitle}
 	if bookAuthor != nil && *bookAuthor != "" {
 		queryParams["author"] = *bookAuthor
@@ -117,40 +144,26 @@ func (c *GoodreadsClient) GetBookByTitle(ctx context.Context, bookTitle string, 
 
 // SearchBooks search for a book by its title and optionally an author (which can give better results)
 // https://www.goodreads.com/api/index#search.books
-func (c *GoodreadsClient) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
+func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
 	query := bookTitle
 	if bookAuthor != nil && *bookAuthor != "" {
 		query = fmt.Sprintf("%s %s", query, *bookAuthor)
 	}
 	queryParams := map[string]string{"q": query}
 
-	var result struct {
+	// Search for books, getting their ids
+	var unmarshaller struct {
 		BookIds []string `xml:"search>results>work>best_book>id"`
 	}
-	err := c.Get(ctx, "search/index.xml", queryParams, &result)
+	err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
 	if err != nil {
 		return nil, err
 	}
 
-	books := make([]Book, len(result.BookIds))
-	var errs error
-	var wg sync.WaitGroup
-	for idx, bookId := range result.BookIds {
-		wg.Add(1)
-		go func(bookId string, idx int) {
-			defer wg.Done()
-
-			book, err := c.GetBookById(ctx, bookId)
-			if err != nil {
-				errs = errors.Join(errs, err)
-				return
-			}
-			books[idx] = book
-		}(bookId, idx)
-	}
-	wg.Wait()
-	if errs != nil {
-		return nil, errs
+	// Get book details using their ids
+	books, err := c.GetBooksByIds(ctx, unmarshaller.BookIds)
+	if err != nil {
+		return nil, err
 	}
 
 	return books, nil

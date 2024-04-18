@@ -15,7 +15,7 @@ func HTTPResponseError(response *http.Response) error {
 			return fmt.Errorf("got status %s", response.Status)
 		}
 
-		var responseContent interface{}
+		var responseContent any
 		err = json.Unmarshal(responseBody, &responseContent)
 		if err != nil {
 			responseContent = string(responseBody)

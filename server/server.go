@@ -13,7 +13,7 @@ func NewServer() StrictServerInterface { return &server{} }
 
 func (*server) Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error) {
 	// Search book
-	goodreadsBooks, err := goodreads.DefaultGoodreadsClient.SearchBooks(ctx, request.Params.Query, request.Params.Author)
+	goodreadsBooks, err := goodreads.DefaultClient.SearchBooks(ctx, request.Params.Query, request.Params.Author)
 	if err != nil {
 		return Search500JSONResponse{Error: utils.ToPointer(err.Error())}, nil
 	}

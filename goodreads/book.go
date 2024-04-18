@@ -72,6 +72,21 @@ type Edition struct {
 	LanguageCode     string  `xml:"language_code"`
 }
 
+// func (e *Edition) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+// 	type alias Edition
+// 	var unmarshaller alias
+// 	err := d.DecodeElement(&unmarshaller, &start)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	*e = Edition(unmarshaller)
+
+// 	// Cleanup some fields
+// 	e.Description = html2text.HTML2Text(e.Description)
+
+// 	return nil
+// }
+
 type SeriesBook struct {
 	Series       Series  `xml:"series"`
 	BookPosition *string `xml:"user_position"`
