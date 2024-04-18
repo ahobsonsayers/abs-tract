@@ -27,7 +27,7 @@ linters-settings:
 
       - name: var-naming
         arguments:
-          - ["ID", "JSON", "URL"] # Allow List
+          - ["ID", "IDS", "JSON", "URL"] # Allow List
           - [] # Deny List
 
   # https://golangci-lint.run/usage/linters/#stylecheck

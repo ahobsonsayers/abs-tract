@@ -50,9 +50,8 @@ func NewRouter() (http.Handler, error) {
 			&oapimiddleware.Options{
 				SilenceServersWarning: true,
 				Options: openapi3filter.Options{
-					AuthenticationFunc: func(ctx context.Context, authInput *openapi3filter.AuthenticationInput) error {
-						// Skip auth
-						return nil
+					AuthenticationFunc: func(_ context.Context, _ *openapi3filter.AuthenticationInput) error {
+						return nil // Do nothing
 					},
 				},
 			},

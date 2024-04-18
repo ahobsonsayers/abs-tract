@@ -3,7 +3,10 @@ package goodreads
 import (
 	"encoding/xml"
 	"math"
+	"regexp"
 	"strings"
+
+	"github.com/k3a/html2text"
 )
 
 type Book struct {
@@ -14,21 +17,29 @@ type Book struct {
 	Genres      Genres          `xml:"popular_shelves"` // The (max) first 5 "genre" shelves
 }
 
+func (b *Book) Sanitise() {
+	b.BestEdition.Sanitise()
+	for _, series := range b.Series {
+		series.Sanitise()
+	}
+}
+
 func (b *Book) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type alias Book
-	type unmarshaller struct {
+	var unmarshaller struct {
 		alias
 		Edition
 	}
-
-	var book unmarshaller
-	err := d.DecodeElement(&book, &start)
+	err := d.DecodeElement(&unmarshaller, &start)
 	if err != nil {
 		return err
 	}
 
-	*b = Book(book.alias)
-	b.BestEdition = book.Edition
+	*b = Book(unmarshaller.alias)
+	b.BestEdition = unmarshaller.Edition
+
+	b.Sanitise()
+
 	return nil
 }
 
@@ -72,24 +83,25 @@ type Edition struct {
 	LanguageCode     string  `xml:"language_code"`
 }
 
-// func (e *Edition) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-// 	type alias Edition
-// 	var unmarshaller alias
-// 	err := d.DecodeElement(&unmarshaller, &start)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	*e = Edition(unmarshaller)
+func (e *Edition) Sanitise() {
+	// Description can sometimes be html, so convert to plain text
+	e.Description = html2text.HTML2Text(e.Description)
 
-// 	// Cleanup some fields
-// 	e.Description = html2text.HTML2Text(e.Description)
-
-// 	return nil
-// }
+	// Get largest image by removing anything between the last number and the extensions
+	// For Example:
+	// https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907._SX98_.jpg"
+	// Should be:
+	// "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907.jpg"
+	e.ImageURL = (regexp.MustCompile(`(\d+)\..*?\.(jpe?g)`).ReplaceAllString(e.ImageURL, "$1.$2"))
+}
 
 type SeriesBook struct {
 	Series       Series  `xml:"series"`
 	BookPosition *string `xml:"user_position"`
+}
+
+func (s *SeriesBook) Sanitise() {
+	s.Series.Sanitise()
 }
 
 type Series struct {
@@ -101,18 +113,7 @@ type Series struct {
 	Numbered         bool   `xml:"numbered"`
 }
 
-func (s *Series) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type alias Series
-	var unmarshaller alias
-	err := d.DecodeElement(&unmarshaller, &start)
-	if err != nil {
-		return err
-	}
-	*s = Series(unmarshaller)
-
-	// Cleanup some fields
+func (s *Series) Sanitise() {
 	s.Title = strings.TrimSpace(s.Title)
 	s.Description = strings.TrimSpace(s.Description)
-
-	return nil
 }
