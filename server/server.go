@@ -11,9 +11,9 @@ type server struct{}
 
 func NewServer() StrictServerInterface { return &server{} }
 
-func (s *server) Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error) {
+func (*server) Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error) {
 	// Search book
-	goodreadsBooks, err := goodreads.DefaultGoodreadsClient.SearchBook(ctx, request.Params.Query, request.Params.Author)
+	goodreadsBooks, err := goodreads.DefaultGoodreadsClient.SearchBooks(ctx, request.Params.Query, request.Params.Author)
 	if err != nil {
 		return Search500JSONResponse{Error: utils.ToPointer(err.Error())}, nil
 	}

@@ -3,10 +3,13 @@ package goodreads
 import (
 	"context"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
+	"sync"
 )
 
 const (
@@ -42,6 +45,8 @@ func (c *GoodreadsClient) Get(
 	apiUrlValues := make(url.Values, len(queryParams))
 	apiUrlValues.Add("key", c.apiKey)
 	for key, value := range queryParams {
+		// Do some minor sanitising of value by removing characters known to be an issue
+		value = regexp.MustCompile(`[\{\}]+`).ReplaceAllString(value, "")
 		apiUrlValues.Add(key, value)
 	}
 	apiUrl.RawQuery = url.Values(apiUrlValues).Encode()
@@ -75,9 +80,9 @@ func (c *GoodreadsClient) Get(
 	return nil
 }
 
-// GetBook gets a book by its id.
+// GetBookById gets a book by its id.
 // https://www.goodreads.com/api/index#book.show
-func (c *GoodreadsClient) GetBook(ctx context.Context, bookId string) (Book, error) {
+func (c *GoodreadsClient) GetBookById(ctx context.Context, bookId string) (Book, error) {
 	queryParams := map[string]string{"id": bookId}
 
 	var result struct {
@@ -91,21 +96,62 @@ func (c *GoodreadsClient) GetBook(ctx context.Context, bookId string) (Book, err
 	return result.Book, nil
 }
 
-// SearchBook search for a book by its title. An author can be specified to give better results.
+// GetBookByTitle gets a book by its title and optionally an author (which can give a better match)
 // https://www.goodreads.com/api/index#book.title
-func (c *GoodreadsClient) SearchBook(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
+func (c *GoodreadsClient) GetBookByTitle(ctx context.Context, bookTitle string, bookAuthor *string) (Book, error) {
 	queryParams := map[string]string{"title": bookTitle}
 	if bookAuthor != nil && *bookAuthor != "" {
 		queryParams["author"] = *bookAuthor
 	}
 
 	var result struct {
-		Works []Book `xml:"book"`
+		Work Book `xml:"book"`
 	}
 	err := c.Get(ctx, "book/title.xml", queryParams, &result)
+	if err != nil {
+		return Book{}, err
+	}
+
+	return result.Work, nil
+}
+
+// SearchBooks search for a book by its title and optionally an author (which can give better results)
+// https://www.goodreads.com/api/index#search.books
+func (c *GoodreadsClient) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
+	query := bookTitle
+	if bookAuthor != nil && *bookAuthor != "" {
+		query = fmt.Sprintf("%s %s", query, *bookAuthor)
+	}
+	queryParams := map[string]string{"q": query}
+
+	var result struct {
+		BookIds []string `xml:"search>results>work>best_book>id"`
+	}
+	err := c.Get(ctx, "search/index.xml", queryParams, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	return result.Works, nil
+	books := make([]Book, len(result.BookIds))
+	var errs error
+	var wg sync.WaitGroup
+	for idx, bookId := range result.BookIds {
+		wg.Add(1)
+		go func(bookId string, idx int) {
+			defer wg.Done()
+
+			book, err := c.GetBookById(ctx, bookId)
+			if err != nil {
+				errs = errors.Join(errs, err)
+				return
+			}
+			books[idx] = book
+		}(bookId, idx)
+	}
+	wg.Wait()
+	if errs != nil {
+		return nil, errs
+	}
+
+	return books, nil
 }
