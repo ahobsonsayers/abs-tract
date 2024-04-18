@@ -8,6 +8,11 @@ import (
 )
 
 func GoodreadsBookToAudioBookShelfBook(goodreadsBook goodreads.Book) BookMetadata {
+	var authorName *string
+	if len(goodreadsBook.Authors) != 0 {
+		authorName = &goodreadsBook.Authors[0].Name
+	}
+
 	series := make([]SeriesMetadata, 0, len(goodreadsBook.Series))
 	for _, goodreadsSeriesSingle := range goodreadsBook.Series {
 		seriesSingle := SeriesMetadata{
@@ -20,7 +25,7 @@ func GoodreadsBookToAudioBookShelfBook(goodreadsBook goodreads.Book) BookMetadat
 	return BookMetadata{
 		// Work Fields
 		Title:         goodreadsBook.Work.Title,
-		Author:        utils.ToPointer(goodreadsBook.Authors[0].Name),
+		Author:        authorName,
 		PublishedYear: utils.ToPointer(strconv.Itoa(goodreadsBook.Work.PublicationYear)),
 		// Edition Fields
 		Isbn:        goodreadsBook.BestEdition.ISBN,
