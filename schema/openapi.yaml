@@ -138,5 +138,4 @@ components:
         series:
           type: string
         sequence:
-          type: integer
-          format: int
+          type: string

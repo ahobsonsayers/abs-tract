@@ -73,8 +73,8 @@ type Edition struct {
 }
 
 type SeriesBook struct {
-	Series       Series `xml:"series"`
-	BookPosition *int   `xml:"user_position"`
+	Series       Series  `xml:"series"`
+	BookPosition *string `xml:"user_position"`
 }
 
 type Series struct {
