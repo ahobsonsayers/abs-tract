@@ -84,8 +84,8 @@ func (g *Genres) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
-	genres := make(Genres, 0, 5)
-	seenGenreShelves := mapset.NewSetWithSize[string](5)
+	genres := make(Genres, 0, 3)
+	seenGenreShelves := mapset.NewSetWithSize[string](3)
 	for _, shelf := range shelves.Shelf {
 		// Make shelf name singular for easier comparison
 		shelfName := inflection.Singular(shelf.Name)
@@ -105,7 +105,9 @@ func (g *Genres) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 		genres = append(genres, genre)
 		seenGenreShelves.Add(shelfName)
-		if len(genres) == 5 {
+
+		// Only get top 3 genres
+		if len(genres) == 3 {
 			break
 		}
 	}
