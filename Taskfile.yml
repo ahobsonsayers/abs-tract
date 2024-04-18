@@ -16,6 +16,10 @@ tasks:
         go clean -testcache
         go test ./...
 
+  gen:
+    cmds:
+      - go generate ./...
+
   build:
     cmds:
       - go build -v -o bin/abs-goodreads
