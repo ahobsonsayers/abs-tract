@@ -15,19 +15,19 @@ type Book struct {
 }
 
 func (b *Book) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type bookAlias Book
-	type bookAux struct {
-		bookAlias
+	type alias Book
+	type unmarshaller struct {
+		alias
 		Edition
 	}
 
-	var book bookAux
+	var book unmarshaller
 	err := d.DecodeElement(&book, &start)
 	if err != nil {
 		return err
 	}
 
-	*b = Book(book.bookAlias)
+	*b = Book(book.alias)
 	b.BestEdition = book.Edition
 	return nil
 }
@@ -56,7 +56,7 @@ func (w Work) AverageRating() float64 {
 }
 
 type Edition struct {
-	Id               string  `xml:"id"` // Can be used to show book
+	Id               string  `xml:"id"`
 	ISBN             *string `xml:"isbn13"`
 	Title            string  `xml:"title"`
 	Description      string  `xml:"description"`
@@ -87,13 +87,13 @@ type Series struct {
 }
 
 func (s *Series) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	type seriesAlias Series
-	var series seriesAlias
-	err := d.DecodeElement(&series, &start)
+	type alias Series
+	var unmarshaller alias
+	err := d.DecodeElement(&unmarshaller, &start)
 	if err != nil {
 		return err
 	}
-	*s = Series(series)
+	*s = Series(unmarshaller)
 
 	// Cleanup some fields
 	s.Title = strings.TrimSpace(s.Title)
