@@ -11,6 +11,11 @@ import (
 	"golang.org/x/text/language/display"
 )
 
+var (
+	alternativeCoverRegex = regexp.MustCompile(`^\s*<i>.*?[Aa]lternate cover.*?<\/i>\s*`)
+	imageUrlRegex         = regexp.MustCompile(`(\d+)\..*?\.(jpe?g)`)
+)
+
 type Book struct {
 	Work        Work            `xml:"work"`
 	BestEdition Edition         // Unmarshalled using the custom unmarshaler below
@@ -86,15 +91,18 @@ type Edition struct {
 }
 
 func (e *Edition) Sanitise() {
-	// Description can sometimes be html, so convert to plain text
-	e.Description = html2text.HTML2Text(e.Description)
+	// Description can sometimes be html and contain preamble about alternative covers
+	description := strings.TrimSpace(e.Description)
+	description = alternativeCoverRegex.ReplaceAllString(description, "")
+	description = html2text.HTML2Text(description)
+	e.Description = description
 
 	// Get largest image by removing anything between the last number and the extensions
 	// For Example:
 	// https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907._SX98_.jpg"
 	// Should be:
 	// "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907.jpg"
-	e.ImageURL = (regexp.MustCompile(`(\d+)\..*?\.(jpe?g)`).ReplaceAllString(e.ImageURL, "$1.$2"))
+	e.ImageURL = imageUrlRegex.ReplaceAllString(e.ImageURL, "$1.$2")
 
 	// Convert language from code to name (if possible)
 	lang, err := language.Parse(e.Language)
