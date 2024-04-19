@@ -102,7 +102,7 @@ func (e *Edition) Sanitise() {
 	// https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907._SX98_.jpg"
 	// Should be:
 	// "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907.jpg"
-	if strings.Contains(e.ImageURL, "noimage") {
+	if strings.Contains(e.ImageURL, "nophoto") {
 		e.ImageURL = ""
 	} else {
 		e.ImageURL = imageUrlRegex.ReplaceAllString(e.ImageURL, "$1.$2")
