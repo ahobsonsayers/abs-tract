@@ -179,7 +179,6 @@ func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *
 		if len(commonBookIds) != 0 {
 			bookIds = commonBookIds
 		}
-
 	}
 
 	// Get book details using their ids
