@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/k3a/html2text"
+	"golang.org/x/text/language"
+	"golang.org/x/text/language/display"
 )
 
 type Book struct {
@@ -19,8 +21,9 @@ type Book struct {
 
 func (b *Book) Sanitise() {
 	b.BestEdition.Sanitise()
-	for _, series := range b.Series {
+	for idx, series := range b.Series {
 		series.Sanitise()
+		b.Series[idx] = series
 	}
 }
 
@@ -47,7 +50,6 @@ type Work struct {
 	Title         string `xml:"original_title"`
 	MediaType     string `xml:"media_type"`
 	EditionsCount int    `xml:"books_count"`
-	Language      int    `xml:"original_language_id"`
 
 	// Publication
 	PublicationYear  int `xml:"original_publication_year"`
@@ -80,7 +82,7 @@ type Edition struct {
 	PublicationDay   string  `xml:"publication_day"`
 	Publisher        string  `xml:"publisher"`
 	CountryCode      string  `xml:"country_code"`
-	LanguageCode     string  `xml:"language_code"`
+	Language         string  `xml:"language_code"`
 }
 
 func (e *Edition) Sanitise() {
@@ -93,6 +95,14 @@ func (e *Edition) Sanitise() {
 	// Should be:
 	// "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907.jpg"
 	e.ImageURL = (regexp.MustCompile(`(\d+)\..*?\.(jpe?g)`).ReplaceAllString(e.ImageURL, "$1.$2"))
+
+	// Convert language from code to name (if possible)
+	lang, err := language.Parse(e.Language)
+	if err == nil {
+		e.Language = display.English.Languages().Name(lang)
+	} else {
+		e.Language = strings.ToTitle(e.Language)
+	}
 }
 
 type SeriesBook struct {

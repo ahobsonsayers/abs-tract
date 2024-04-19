@@ -32,7 +32,7 @@ func GoodreadsBookToAudioBookShelfBook(goodreadsBook goodreads.Book) BookMetadat
 		Cover:       utils.ToPointer(goodreadsBook.BestEdition.ImageURL),
 		Description: &goodreadsBook.BestEdition.Description,
 		Publisher:   &goodreadsBook.BestEdition.Publisher,
-		Language:    &goodreadsBook.BestEdition.LanguageCode,
+		Language:    &goodreadsBook.BestEdition.Language,
 		// Other fields
 		Series: &series,
 		Genres: utils.ToPointer([]string(goodreadsBook.Genres)),

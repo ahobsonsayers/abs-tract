@@ -9,7 +9,10 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"sync"
+
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 )
 
 const (
@@ -99,18 +102,28 @@ func (c *Client) GetBookById(ctx context.Context, bookId string) (Book, error) {
 func (c *Client) GetBooksByIds(ctx context.Context, bookIds []string) ([]Book, error) {
 	books := make([]Book, len(bookIds))
 	var errs error
+
 	var wg sync.WaitGroup
+	var booksMutex sync.Mutex
+	var errsMutex sync.Mutex
+
 	for idx, bookId := range bookIds {
 		wg.Add(1)
+
 		go func(bookId string, idx int) {
 			defer wg.Done()
 
 			book, err := c.GetBookById(ctx, bookId)
 			if err != nil {
+				errsMutex.Lock()
 				errs = errors.Join(errs, err)
+				errsMutex.Unlock()
 				return
 			}
+
+			booksMutex.Lock()
 			books[idx] = book
+			booksMutex.Unlock()
 		}(bookId, idx)
 	}
 
@@ -145,26 +158,84 @@ func (c *Client) GetBookByTitle(ctx context.Context, bookTitle string, bookAutho
 // SearchBooks search for a book by its title and optionally an author (which can give better results)
 // https://www.goodreads.com/api/index#search.books
 func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
-	query := bookTitle
-	if bookAuthor != nil && *bookAuthor != "" {
-		query = fmt.Sprintf("%s %s", query, *bookAuthor)
-	}
-	queryParams := map[string]string{"q": query}
-
-	// Search for books, getting their ids
-	var unmarshaller struct {
-		BookIds []string `xml:"search>results>work>best_book>id"`
-	}
-	err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
+	// Search for books via title, getting their ids.
+	bookIds, err := c.searchBookIdsByTitle(ctx, bookTitle)
 	if err != nil {
 		return nil, err
 	}
 
+	// If author is set, also search for books via author, getting their ids.
+	// Only keeps book ids that appear in both title and author searches
+	if bookAuthor != nil && *bookAuthor != "" {
+		authorBookIds, err := c.searchBookIdsByAuthor(ctx, *bookAuthor)
+		if err != nil {
+			return nil, err
+		}
+
+		bookIds = utils.Intersection(bookIds, authorBookIds)
+	}
+
 	// Get book details using their ids
-	books, err := c.GetBooksByIds(ctx, unmarshaller.BookIds)
+	books, err := c.GetBooksByIds(ctx, bookIds)
 	if err != nil {
 		return nil, err
 	}
 
 	return books, nil
+}
+
+type bookIdUnmarshaller struct {
+	BookIds []string `xml:"search>results>work>best_book>id"`
+}
+
+func (c *Client) searchBookIdsByTitle(ctx context.Context, title string) ([]string, error) {
+	queryParams := map[string]string{
+		"q":             title,
+		"search[field]": "title",
+	}
+	var unmarshaller bookIdUnmarshaller
+	err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
+	if err != nil {
+		return nil, err
+	}
+
+	return unmarshaller.BookIds, nil
+}
+
+func (c *Client) searchBookIdsByAuthor(ctx context.Context, author string) ([]string, error) {
+	var bookIds []string
+	var errs error
+
+	var wg sync.WaitGroup
+	var bookIdsMutex sync.Mutex
+	var errsMutex sync.Mutex
+
+	for pageNumber := 1; pageNumber <= 5; pageNumber++ {
+		wg.Add(1)
+
+		go func(page int) {
+			defer wg.Done()
+
+			queryParams := map[string]string{
+				"q":             author,
+				"page":          strconv.Itoa(page),
+				"search[field]": "author",
+			}
+			var unmarshaller bookIdUnmarshaller
+			err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
+			if err != nil {
+				errsMutex.Lock()
+				errs = errors.Join(errs, err)
+				errsMutex.Unlock()
+				return
+			}
+
+			bookIdsMutex.Lock()
+			bookIds = append(bookIds, unmarshaller.BookIds...)
+			bookIdsMutex.Unlock()
+		}(pageNumber)
+	}
+	wg.Wait()
+
+	return bookIds, errs
 }

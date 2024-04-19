@@ -22,6 +22,9 @@ linters-settings:
       - name: add-constant
         disabled: true
 
+      - name: cognitive-complexity
+        arguments: [15]
+
       - name: line-length-limit
         arguments: [120]
 
