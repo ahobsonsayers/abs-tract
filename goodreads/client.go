@@ -172,7 +172,14 @@ func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *
 			return nil, err
 		}
 
-		bookIds = utils.Intersection(bookIds, authorBookIds)
+		// Get common book ids. If there are no common book
+		// ids, just use the book ids form the title search.
+		// Some result are better than none!
+		commonBookIds := utils.Intersection(bookIds, authorBookIds)
+		if len(commonBookIds) != 0 {
+			bookIds = commonBookIds
+		}
+
 	}
 
 	// Get book details using their ids
@@ -210,7 +217,8 @@ func (c *Client) searchBookIdsByAuthor(ctx context.Context, author string) ([]st
 	var bookIdsMutex sync.Mutex
 	var errsMutex sync.Mutex
 
-	for pageNumber := 1; pageNumber <= 5; pageNumber++ {
+	// Get 10 pages of author books. This should be enough
+	for pageNumber := 1; pageNumber <= 10; pageNumber++ {
 		wg.Add(1)
 
 		go func(page int) {
