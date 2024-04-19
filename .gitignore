@@ -1,6 +1,7 @@
 # Ignore certain directories
 build/
 bin/
+scratch/
 
 # Ignore certain files
 .env
