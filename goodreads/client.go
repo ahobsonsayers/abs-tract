@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/samber/lo"
 )
 
 const (
@@ -158,24 +158,33 @@ func (c *Client) GetBookByTitle(ctx context.Context, bookTitle string, bookAutho
 // SearchBooks search for a book by its title and optionally an author (which can give better results)
 // https://www.goodreads.com/api/index#search.books
 func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
-	// Search for books via title, getting their ids.
-	bookIds, err := c.searchBookIdsByTitle(ctx, bookTitle)
-	if err != nil {
-		return nil, err
-	}
-
-	// If author is set, also search for books via author, getting their ids.
-	// Only keeps book ids that appear in both title and author searches
-	if bookAuthor != nil && *bookAuthor != "" {
-		authorBookIds, err := c.searchBookIdsByAuthor(ctx, *bookAuthor)
+	var bookIds []string
+	var err error
+	if bookAuthor == nil || *bookAuthor == "" {
+		// If author is not set, search for book ids by title
+		bookIds, err = c.searchBookIds(ctx, &bookTitle, nil)
 		if err != nil {
 			return nil, err
 		}
 
-		// Get common book ids. If there are no common book
-		// ids, just use the book ids form the title search.
-		// Some result are better than none!
-		commonBookIds := utils.Intersection(bookIds, authorBookIds)
+	} else {
+		// If author is set, search for book id by title and author.
+		bookIds, err = c.searchBookIds(ctx, &bookTitle, bookAuthor)
+		if err != nil {
+			return nil, err
+		}
+
+		// Also search for book ids just by author
+		authorBookIds, err := c.searchBookIds(ctx, nil, bookAuthor)
+		if err != nil {
+			return nil, err
+		}
+
+		// Get book ids common to both searches.
+		// This helps give better results that for the author.
+		// If there are no common book ids, just use the book ids
+		// from the first search. Some results are better than none!
+		commonBookIds := lo.Intersect(authorBookIds, bookIds)
 		if len(commonBookIds) != 0 {
 			bookIds = commonBookIds
 		}
@@ -190,45 +199,45 @@ func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *
 	return books, nil
 }
 
-type bookIdUnmarshaller struct {
-	BookIds []string `xml:"search>results>work>best_book>id"`
-}
-
-func (c *Client) searchBookIdsByTitle(ctx context.Context, title string) ([]string, error) {
-	queryParams := map[string]string{
-		"q":             title,
-		"search[field]": "title",
+func (c *Client) searchBookIds(ctx context.Context, title *string, author *string) ([]string, error) {
+	// Get query params
+	var query string
+	var searchField string
+	if title != nil && *title != "" && author != nil && *author != "" {
+		query = fmt.Sprintf("%s %s", *author, *title)
+		searchField = "all"
+	} else if title != nil && *title != "" {
+		query = *title
+		searchField = "title"
+	} else if author != nil && *author != "" {
+		query = *author
+		searchField = "author"
+	} else {
+		return nil, nil
 	}
-	var unmarshaller bookIdUnmarshaller
-	err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
-	if err != nil {
-		return nil, err
-	}
 
-	return unmarshaller.BookIds, nil
-}
-
-func (c *Client) searchBookIdsByAuthor(ctx context.Context, author string) ([]string, error) {
-	var bookIds []string
+	bookIdsPages := make([][]string, 5)
 	var errs error
 
 	var wg sync.WaitGroup
 	var bookIdsMutex sync.Mutex
 	var errsMutex sync.Mutex
 
-	// Get 10 pages of author books. This should be enough
-	for pageNumber := 1; pageNumber <= 10; pageNumber++ {
+	// Get 5 pages of books. This should be enough
+	for idx := 0; idx < len(bookIdsPages); idx++ {
 		wg.Add(1)
 
-		go func(page int) {
+		go func(idx int) {
 			defer wg.Done()
 
 			queryParams := map[string]string{
-				"q":             author,
-				"page":          strconv.Itoa(page),
-				"search[field]": "author",
+				"q":             query,
+				"search[field]": searchField,
+				"page":          strconv.Itoa(idx + 1),
 			}
-			var unmarshaller bookIdUnmarshaller
+			var unmarshaller struct {
+				BookIds []string `xml:"search>results>work>best_book>id"`
+			}
 			err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
 			if err != nil {
 				errsMutex.Lock()
@@ -238,11 +247,11 @@ func (c *Client) searchBookIdsByAuthor(ctx context.Context, author string) ([]st
 			}
 
 			bookIdsMutex.Lock()
-			bookIds = append(bookIds, unmarshaller.BookIds...)
+			bookIdsPages[idx] = unmarshaller.BookIds
 			bookIdsMutex.Unlock()
-		}(pageNumber)
+		}(idx)
 	}
 	wg.Wait()
 
-	return bookIds, errs
+	return lo.Flatten(bookIdsPages), errs
 }

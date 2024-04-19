@@ -25,6 +25,12 @@ linters-settings:
       - name: cognitive-complexity
         arguments: [15]
 
+      - name: cyclomatic
+        arguments: [15]
+
+      - name: empty-lines
+        disabled: true
+
       - name: line-length-limit
         arguments: [120]
 

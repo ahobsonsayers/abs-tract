@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/ahobsonsayers/abs-goodreads/goodreads"
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/samber/lo"
 )
 
 type server struct{}
@@ -15,7 +15,7 @@ func (*server) Search(ctx context.Context, request SearchRequestObject) (SearchR
 	// Search book
 	goodreadsBooks, err := goodreads.DefaultClient.SearchBooks(ctx, request.Params.Query, request.Params.Author)
 	if err != nil {
-		return Search500JSONResponse{Error: utils.ToPointer(err.Error())}, nil
+		return Search500JSONResponse{Error: lo.ToPtr(err.Error())}, nil
 	}
 
 	books := make([]BookMetadata, 0, len(goodreadsBooks))
