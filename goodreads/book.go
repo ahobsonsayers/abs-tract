@@ -102,7 +102,11 @@ func (e *Edition) Sanitise() {
 	// https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907._SX98_.jpg"
 	// Should be:
 	// "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907.jpg"
-	e.ImageURL = imageUrlRegex.ReplaceAllString(e.ImageURL, "$1.$2")
+	if strings.Contains(e.ImageURL, "noimage") {
+		e.ImageURL = ""
+	} else {
+		e.ImageURL = imageUrlRegex.ReplaceAllString(e.ImageURL, "$1.$2")
+	}
 
 	// Convert language from code to name (if possible)
 	lang, err := language.Parse(e.Language)
