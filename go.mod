@@ -10,8 +10,11 @@ require (
 	github.com/go-chi/httplog/v2 v2.0.9
 	github.com/jinzhu/inflection v1.0.0
 	github.com/k3a/html2text v1.2.1
+	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.1
+	github.com/orsinium-labs/enum v1.4.0
+	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/text v0.14.0
 )
@@ -29,7 +32,6 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/samber/lo v1.39.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect

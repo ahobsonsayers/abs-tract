@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ahobsonsayers/abs-goodreads/goodreads"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,10 +34,19 @@ func TestGetBookByTitle(t *testing.T) {
 	checkTheHobbitBookDetails(t, book)
 }
 
-func TestSearch(t *testing.T) {
+func TestSearchTitle(t *testing.T) {
 	client := goodreads.NewClient(http.DefaultClient, nil, nil)
 
 	books, err := client.SearchBooks(context.Background(), TheHobbitBookTitle, nil)
+	require.NoError(t, err)
+
+	checkTheHobbitBookDetails(t, books[0])
+}
+
+func TestSearchTitleAndAuthor(t *testing.T) {
+	client := goodreads.NewClient(http.DefaultClient, nil, nil)
+
+	books, err := client.SearchBooks(context.Background(), TheHobbitBookTitle, lo.ToPtr(TheHobbitBookAuthor))
 	require.NoError(t, err)
 
 	checkTheHobbitBookDetails(t, books[0])

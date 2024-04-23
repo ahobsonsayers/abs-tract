@@ -12,16 +12,29 @@ import (
 )
 
 var (
-	alternativeCoverRegex = regexp.MustCompile(`^\s*<i>.*?[Aa]lternate cover.*?<\/i>\s*`)
+	alternativeCoverRegex = regexp.MustCompile(`^\s*<i>.*[Aa]lternat(iv)?e cover.*</i>\s*$`)
 	imageUrlRegex         = regexp.MustCompile(`(\d+)\..*?\.(jpe?g)`)
+	lastBracketRegex      = regexp.MustCompile(`^(.*)(\([^\(\)]*\))([^()]*)$`)
 )
+
+type BookOverview struct {
+	Id     string `xml:"id"`
+	Title  string `xml:"title"`
+	Author string `xml:"author>name"`
+}
+
+func (b *BookOverview) Sanitise() {
+	// Strip last brackets from title. This is the series.
+	// e.g. Harry Potter and the Chamber of Secrets (Harry Potter, #2)
+	b.Title = lastBracketRegex.ReplaceAllString(b.Title, "$1$2")
+}
 
 type Book struct {
 	Work        Work            `xml:"work"`
 	BestEdition Edition         // Unmarshalled using the custom unmarshaler below
 	Authors     []AuthorDetails `xml:"authors>author"`
 	Series      []SeriesBook    `xml:"series_works>series_work"`
-	Genres      Genres          `xml:"popular_shelves"` // The (max) first 5 "genre" shelves
+	Genres      Genres          `xml:"popular_shelves"` // The first "genre" shelves
 }
 
 func (b *Book) Sanitise() {
@@ -117,25 +130,18 @@ func (e *Edition) Sanitise() {
 	}
 }
 
-type SeriesBook struct {
-	Series       Series  `xml:"series"`
-	BookPosition *string `xml:"user_position"`
+func BookIds(books []BookOverview) []string {
+	ids := make([]string, 0, len(books))
+	for _, book := range books {
+		ids = append(ids, book.Id)
+	}
+	return ids
 }
 
-func (s *SeriesBook) Sanitise() {
-	s.Series.Sanitise()
-}
-
-type Series struct {
-	Id               string `xml:"id"`
-	Title            string `xml:"title"`
-	Description      string `xml:"description"`
-	PrimaryBookCount int    `xml:"primary_work_count"`
-	TotalBookCount   int    `xml:"series_works_count"`
-	Numbered         bool   `xml:"numbered"`
-}
-
-func (s *Series) Sanitise() {
-	s.Title = strings.TrimSpace(s.Title)
-	s.Description = strings.TrimSpace(s.Description)
+func BookTitles(books []BookOverview) []string {
+	titles := make([]string, 0, len(books))
+	for _, book := range books {
+		titles = append(titles, book.Title)
+	}
+	return titles
 }
