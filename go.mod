@@ -3,6 +3,8 @@ module github.com/ahobsonsayers/abs-goodreads
 go 1.21
 
 require (
+	github.com/antchfx/htmlquery v1.3.1
+	github.com/antchfx/xpath v1.3.0
 	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/deepmap/oapi-codegen/v2 v2.1.0
 	github.com/getkin/kin-openapi v0.122.0
@@ -16,6 +18,7 @@ require (
 	github.com/orsinium-labs/enum v1.4.0
 	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.9.0
+	golang.org/x/net v0.19.0
 	golang.org/x/text v0.14.0
 )
 
@@ -24,6 +27,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/swag v0.22.4 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
