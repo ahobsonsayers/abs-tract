@@ -1,21 +1,30 @@
 package goodreads
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
+
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 )
 
 // NewClient creates a new goodreads client.
 // If client is nil, the default http client will be used.
-// If api url is nil or uset, the default goodreads api url will be used
-func NewClient(client *http.Client, apiURL, apiKey *string) *Client {
+// If goodreads url is nil or unset, the default goodreads url will be used.
+// Will return an error if the goodreads url is invalid.
+func NewClient(client *http.Client, goodreadsUrl, apiKey *string) (*Client, error) {
 	if client == nil {
 		client = http.DefaultClient
 	}
 
-	apiUrlString := DefaultAPIRootUrl
-	if apiURL != nil && *apiURL != "" {
-		apiUrlString = strings.Trim(*apiURL, "/")
+	goodreadsUrlStruct := defaultGoodreadsUrl
+	if goodreadsUrl != nil && *goodreadsUrl != "" {
+		parsedGoodreadsUrl, err := url.Parse(strings.Trim(*goodreadsUrl, "/"))
+		if err != nil {
+			return nil, fmt.Errorf("invalid goodreads url: %w", err)
+		}
+		goodreadsUrlStruct = parsedGoodreadsUrl
 	}
 
 	apiKeyString := DefaultAPIKey
@@ -24,8 +33,8 @@ func NewClient(client *http.Client, apiURL, apiKey *string) *Client {
 	}
 
 	return &Client{
-		client:     client,
-		apiRootUrl: apiUrlString,
-		apiKey:     apiKeyString,
-	}
+		client:       client,
+		goodreadsUrl: utils.CloneURL(goodreadsUrlStruct),
+		apiKey:       apiKeyString,
+	}, nil
 }

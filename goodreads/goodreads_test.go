@@ -2,7 +2,6 @@ package goodreads_test
 
 import (
 	"context"
-	"net/http"
 	"testing"
 
 	"github.com/ahobsonsayers/abs-goodreads/goodreads"
@@ -17,38 +16,30 @@ const (
 )
 
 func TestGetBookById(t *testing.T) {
-	client := goodreads.NewClient(http.DefaultClient, nil, nil)
-
-	book, err := client.GetBookById(context.Background(), TheHobbitBookId)
+	book, err := goodreads.DefaultClient.GetBookById(context.Background(), TheHobbitBookId)
 	require.NoError(t, err)
-
 	checkTheHobbitBookDetails(t, book)
 }
 
 func TestGetBookByTitle(t *testing.T) {
-	client := goodreads.NewClient(http.DefaultClient, nil, nil)
-
-	book, err := client.GetBookByTitle(context.Background(), TheHobbitBookTitle, nil)
+	book, err := goodreads.DefaultClient.GetBookByTitle(context.Background(), TheHobbitBookTitle, nil)
 	require.NoError(t, err)
-
 	checkTheHobbitBookDetails(t, book)
 }
 
 func TestSearchTitle(t *testing.T) {
-	client := goodreads.NewClient(http.DefaultClient, nil, nil)
-
-	books, err := client.SearchBooks(context.Background(), TheHobbitBookTitle, nil)
+	books, err := goodreads.DefaultClient.SearchBooks(context.Background(), TheHobbitBookTitle, nil)
 	require.NoError(t, err)
-
 	checkTheHobbitBookDetails(t, books[0])
 }
 
 func TestSearchTitleAndAuthor(t *testing.T) {
-	client := goodreads.NewClient(http.DefaultClient, nil, nil)
-
-	books, err := client.SearchBooks(context.Background(), TheHobbitBookTitle, lo.ToPtr(TheHobbitBookAuthor))
+	books, err := goodreads.DefaultClient.SearchBooks(
+		context.Background(),
+		TheHobbitBookTitle,
+		lo.ToPtr(TheHobbitBookAuthor),
+	)
 	require.NoError(t, err)
-
 	checkTheHobbitBookDetails(t, books[0])
 }
 

@@ -6,16 +6,24 @@ run:
 linters:
   enable:
     # Default linters: https://golangci-lint.run/usage/linters#enabled-by-default
-    - gofmt
-    - goimports
-    - makezero
-    - misspell
-    - revive
-    - stylecheck
-    - unparam
+    - gocritic # https://golangci-lint.run/usage/linters/#gocritic
+    - gofmt # https://golangci-lint.run/usage/linters/#gofmt
+    - goimports # https://golangci-lint.run/usage/linters/#goimports
+    - makezero # https://golangci-lint.run/usage/linters/#makezero
+    - misspell # https://golangci-lint.run/usage/linters/#misspell
+    - revive # https://golangci-lint.run/usage/linters/#revive
+    - stylecheck # https://golangci-lint.run/usage/linters/#stylecheck
+    - testifylint # https://golangci-lint.run/usage/linters/#testifylint
+    - unparam # https://golangci-lint.run/usage/linters/#unparam
+    - usestdlibvars # https://golangci-lint.run/usage/linters/#usestdlibvars
 
 linters-settings:
-  # https://golangci-lint.run/usage/linters#revive
+  gocritic:
+    enable-all: true
+    disabled-checks:
+      - hugeParam # TODO Reenable this?
+      - rangeValCopy
+
   revive:
     enable-all-rules: true
     rules:
@@ -23,10 +31,7 @@ linters-settings:
         disabled: true
 
       - name: cognitive-complexity
-        arguments: [15]
-
-      - name: cyclomatic
-        arguments: [15]
+        arguments: [10]
 
       - name: empty-lines
         disabled: true
@@ -39,10 +44,8 @@ linters-settings:
           - ["ID", "IDS", "JSON", "URL"] # Allow List
           - [] # Deny List
 
-  # https://golangci-lint.run/usage/linters/#stylecheck
   stylecheck:
     checks: ["all", "-ST1003"] # ST1003 is a duplicate check of var-naming from revive
 
-  # https://golangci-lint.run/usage/linters/#unparam
   unparam:
     check-exported: true

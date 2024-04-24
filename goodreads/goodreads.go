@@ -13,60 +13,62 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/orsinium-labs/enum"
 	"github.com/samber/lo"
 )
 
 const (
-	DefaultAPIRootUrl = "https://www.goodreads.com"
-	DefaultAPIKey     = "ckvsiSDsuqh7omh74ZZ6Q" // Read only API key kindly provided by LazyLibrarian
+	DefaultGoodreadsUrl = "https://www.goodreads.com"
+	DefaultAPIKey       = "ckvsiSDsuqh7omh74ZZ6Q" // Read only API key kindly provided by LazyLibrarian
 )
 
 var (
+	defaultGoodreadsUrl = lo.Must(url.Parse(DefaultGoodreadsUrl))
+
+	DefaultClient = &Client{
+		client:       http.DefaultClient,
+		goodreadsUrl: utils.CloneURL(defaultGoodreadsUrl),
+		apiKey:       DefaultAPIKey,
+	}
+
 	bookSearchTypeEnum   = enum.NewBuilder[string, BookSearchType]()
 	BookSearchTypeTitle  = bookSearchTypeEnum.Add(BookSearchType{"title"})
 	BookSearchTypeAuthor = bookSearchTypeEnum.Add(BookSearchType{"author"})
 	BookSearchTypes      = bookSearchTypeEnum.Enum()
-
-	DefaultClient = &Client{
-		client:     http.DefaultClient,
-		apiRootUrl: DefaultAPIRootUrl,
-		apiKey:     DefaultAPIKey,
-	}
 )
 
 type BookSearchType enum.Member[string]
 
 type Client struct {
-	client     *http.Client
-	apiRootUrl string
-	apiKey     string
+	client       *http.Client
+	goodreadsUrl *url.URL
+	apiKey       string
 }
 
-func (c *Client) Get(
+// URL returns a clone of of the amazon url used by the client
+func (c *Client) URL() *url.URL { return utils.CloneURL(c.goodreadsUrl) }
+
+func (c *Client) get(
 	ctx context.Context,
-	apiPath string,
-	queryParams map[string]string,
+	path string,
+	parameters map[string]string,
 	target any,
 ) error {
-	// Construct api url
-	apiUrl, err := url.Parse(c.apiRootUrl)
-	if err != nil {
-		return fmt.Errorf("failed to parse api root url: %w", err)
-	}
-	apiUrl = apiUrl.JoinPath(apiPath)
-
-	apiUrlValues := make(url.Values, len(queryParams))
-	apiUrlValues.Add("key", c.apiKey)
-	for key, value := range queryParams {
+	queryParams := url.Values{}
+	queryParams.Add("key", c.apiKey)
+	for key, value := range parameters {
 		// Do some minor sanitising of value by removing characters known to be an issue
-		value = regexp.MustCompile(`[\{\}]+`).ReplaceAllString(value, "")
-		apiUrlValues.Add(key, value)
+		sanitisedValue := regexp.MustCompile(`[\{\}]+`).ReplaceAllString(value, "")
+		queryParams.Add(key, sanitisedValue)
 	}
-	apiUrl.RawQuery = url.Values(apiUrlValues).Encode()
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, apiUrl.String(), http.NoBody)
+	requestUrl := c.URL()
+	requestUrl = requestUrl.JoinPath(path)
+	requestUrl.RawQuery = queryParams.Encode()
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestUrl.String(), http.NoBody)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
@@ -77,7 +79,7 @@ func (c *Client) Get(
 	}
 	defer response.Body.Close()
 
-	httpError := HTTPResponseError(response)
+	httpError := utils.HTTPResponseError(response)
 	if httpError != nil {
 		return httpError
 	}
@@ -103,7 +105,7 @@ func (c *Client) GetBookById(ctx context.Context, bookId string) (Book, error) {
 	var result struct {
 		Book Book `xml:"book"`
 	}
-	err := c.Get(ctx, "book/show.xml", queryParams, &result)
+	err := c.get(ctx, "book/show.xml", queryParams, &result)
 	if err != nil {
 		return Book{}, err
 	}
@@ -159,7 +161,7 @@ func (c *Client) GetBookByTitle(ctx context.Context, bookTitle string, bookAutho
 	var result struct {
 		Work Book `xml:"book"`
 	}
-	err := c.Get(ctx, "book/title.xml", queryParams, &result)
+	err := c.get(ctx, "book/title.xml", queryParams, &result)
 	if err != nil {
 		return Book{}, err
 	}
@@ -250,7 +252,7 @@ func (c *Client) searchBooksSinglePage(ctx context.Context, input searchBooksSin
 	var unmarshaller struct {
 		Books []BookOverview `xml:"search>results>work>best_book"`
 	}
-	err := c.Get(ctx, "search/index.xml", queryParams, &unmarshaller)
+	err := c.get(ctx, "search/index.xml", queryParams, &unmarshaller)
 	if err != nil {
 		return nil, err
 	}

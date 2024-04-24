@@ -1,4 +1,4 @@
-package goodreads
+package utils
 
 import (
 	"encoding/json"
