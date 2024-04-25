@@ -14,7 +14,7 @@ func (*server) SearchGoodreads(
 	ctx context.Context,
 	request SearchGoodreadsRequestObject,
 ) (SearchGoodreadsResponseObject, error) {
-	books, err := searchGoodreadsBooks(ctx, request.Params.Query, &request.Params.Query)
+	books, err := searchGoodreadsBooks(ctx, request.Params.Query, request.Params.Author)
 	if err != nil {
 		return SearchGoodreads500JSONResponse{N500JSONResponse{Error: lo.ToPtr(err.Error())}}, nil
 	}
@@ -26,7 +26,7 @@ func (*server) SearchKindle(
 	ctx context.Context,
 	request SearchKindleRequestObject,
 ) (SearchKindleResponseObject, error) {
-	books, err := searchKindleBooks(ctx, request.Region, request.Params.Query, &request.Params.Query)
+	books, err := searchKindleBooks(ctx, request.Region, request.Params.Query, request.Params.Author)
 	if err != nil {
 		return SearchKindle500JSONResponse{N500JSONResponse{Error: lo.ToPtr(err.Error())}}, nil
 	}
