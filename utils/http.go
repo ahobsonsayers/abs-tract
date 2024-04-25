@@ -16,6 +16,7 @@ func HTTPResponseError(response *http.Response) error {
 		}
 
 		var responseContent any
+
 		err = json.Unmarshal(responseBody, &responseContent)
 		if err != nil {
 			responseContent = string(responseBody)

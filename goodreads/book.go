@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 	"github.com/k3a/html2text"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
@@ -13,7 +14,6 @@ import (
 
 var (
 	alternativeCoverRegex = regexp.MustCompile(`^\s*<i>.*[Aa]lternat(iv)?e cover.*</i>\s*$`)
-	imageUrlRegex         = regexp.MustCompile(`(\d+)\..*?\.(jpe?g)`)
 	lastBracketRegex      = regexp.MustCompile(`^(.*)(\([^\(\)]*\))([^()]*)$`)
 )
 
@@ -110,15 +110,11 @@ func (e *Edition) Sanitise() {
 	description = html2text.HTML2Text(description)
 	e.Description = description
 
-	// Get largest image by removing anything between the last number and the extensions
-	// For Example:
-	// https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907._SX98_.jpg"
-	// Should be:
-	// "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546071216l/5907.jpg"
+	// Get original cover image by cleaning the ul0
 	if strings.Contains(e.ImageURL, "nophoto") {
 		e.ImageURL = ""
 	} else {
-		e.ImageURL = imageUrlRegex.ReplaceAllString(e.ImageURL, "$1.$2")
+		e.ImageURL = utils.SanitiseImageURL(e.ImageURL)
 	}
 
 	// Convert language from code to name (if possible)
