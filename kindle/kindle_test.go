@@ -24,5 +24,5 @@ func TestSearchBook(t *testing.T) {
 	require.Equal(t, "B007978NU6", book.ASIN)
 	require.Equal(t, "The Hobbit: 75th Anniversary Edition", book.Title)
 	require.Equal(t, "J.R.R. Tolkien and Christopher Tolkien", book.Author)
-	require.Equal(t, "https://m.media-amazon.com/images/I/61Ng-W9EhBL._AC_UY500_QL65_.jpg", book.Cover)
+	require.Equal(t, "https://m.media-amazon.com/images/I/61Ng-W9EhBL.jpg", book.Cover)
 }

@@ -2,11 +2,15 @@ package kindle
 
 import (
 	"strings"
+	"time"
 
+	"github.com/ahobsonsayers/abs-goodreads/utils"
 	"github.com/antchfx/htmlquery"
 	"github.com/antchfx/xpath"
 	"golang.org/x/net/html"
 )
+
+const publishDateLayout = "Jan 2, 2006"
 
 var (
 	bookCoverSetExpr  = xpath.MustCompile(`.//img/@srcset`)
@@ -17,50 +21,55 @@ var (
 )
 
 type Book struct {
-	ASIN   string
-	Title  string
-	Author string
-	Cover  string
+	ASIN        string
+	Title       string
+	Author      string
+	Cover       string
+	PublishDate *time.Time
 }
 
-func BookFromSearchResultHTML(resultNode *html.Node) *Book {
-	if !isKindleBook(resultNode) {
-		return nil
-	}
-
-	asin := bookAsin(resultNode)
-	if asin == "" {
-		return nil
-	}
-
-	title := bookTitle(resultNode)
-	if title == "" {
-		return nil
-	}
-
-	cover := bookCover(resultNode)
-	author := bookAuthor(resultNode)
-
-	return &Book{
-		ASIN:   asin,
-		Title:  title,
-		Author: author,
-		Cover:  cover,
-	}
-}
-
+// BooksFromHTML parses and returns the books from the html of a search results page
 func BooksFromHTML(searchNode *html.Node) ([]Book, error) {
 	resultNodes := htmlquery.QuerySelectorAll(searchNode, searchResultsExpr)
 
 	books := make([]Book, 0, len(resultNodes))
 	for _, resultNode := range resultNodes {
-		book := BookFromSearchResultHTML(resultNode)
+		if !isKindleBook(resultNode) {
+			continue
+		}
+
+		book := BookFromHTML(resultNode)
 		if book != nil {
 			books = append(books, *book)
 		}
 	}
 
 	return books, nil
+}
+
+// BookFromHTML parses and returns a book from the html
+// of a book result on the search results page
+func BookFromHTML(bookNode *html.Node) *Book {
+	asin := bookAsin(bookNode)
+	if asin == "" {
+		return nil
+	}
+
+	title := bookTitle(bookNode)
+	if title == "" {
+		return nil
+	}
+
+	cover := bookCover(bookNode)
+	author, publishDate := bookInfo(bookNode)
+
+	return &Book{
+		ASIN:        asin,
+		Title:       title,
+		Author:      author,
+		Cover:       cover,
+		PublishDate: publishDate,
+	}
 }
 
 func isKindleBook(bookNode *html.Node) bool {
@@ -74,52 +83,52 @@ func isKindleBook(bookNode *html.Node) bool {
 	return strings.Contains(bookFormat, "kindle")
 }
 
+// bookAsin gets the book asim.
 func bookAsin(bookNode *html.Node) string {
 	return htmlquery.SelectAttr(bookNode, "data-asin")
 }
 
+// bookTitle gets the book title.
 func bookTitle(bookNode *html.Node) string {
 	titleNode := htmlquery.QuerySelector(bookNode, bookTitleExpr)
 	titleNodeValue := htmlquery.InnerText(titleNode)
 	return strings.TrimSpace(titleNodeValue)
 }
 
+// bookCover gets the book cover.
 func bookCover(bookNode *html.Node) string {
 	coverSetAttr := htmlquery.QuerySelector(bookNode, bookCoverSetExpr)
 	coverSetAttrValue := htmlquery.InnerText(coverSetAttr)
-	return bookCoverFromCoverSetAttrValue(coverSetAttrValue)
+	return parseBookCoversAttrValue(coverSetAttrValue)
 }
 
-func bookAuthor(bookNode *html.Node) string {
+// bookInfo gets additional book info.
+// Return author and publish date (if found)
+func bookInfo(bookNode *html.Node) (string, *time.Time) {
 	infoNode := htmlquery.QuerySelector(bookNode, bookInfoExpr)
 	bookInfoNodeValue := htmlquery.InnerText(infoNode)
-	return bookAuthorFromInfoNodeValue(bookInfoNodeValue)
+	return parseBookInfoNodeValue(bookInfoNodeValue)
 }
 
-func bookCoverFromCoverSetAttrValue(coverSetAttrValue string) string {
-	// Covers are separated by , and contain a zoom suffix e.g. 2x
-	coverUrlsWithZoom := strings.Split(coverSetAttrValue, ",")
-	if len(coverUrlsWithZoom) == 0 {
-		return ""
-	}
-
-	// Get cover urls without zoom
-	coverUrls := make([]string, 0, len(coverUrlsWithZoom))
-	for _, coverUrlWithZoom := range coverUrlsWithZoom {
-		coverUrl := strings.Fields(coverUrlWithZoom)[0]
-		coverUrls = append(coverUrls, coverUrl)
-	}
-
-	// Get largest cover (the last in the cover set)
-	largestCover := coverUrls[len(coverUrls)-1]
-
-	return largestCover
+// parseBookCoversAttrValue parses the value of the book cover set attribute.
+// Returns the url of the original/full-size book cover.
+// See test for expected value format.
+func parseBookCoversAttrValue(coverSetAttrValue string) string {
+	// Get first cover url from the cover set.
+	// This will not be original full size cover
+	modifiedCoverUrl := strings.Fields(coverSetAttrValue)[0]
+	originalCoverUrl := utils.SanitiseImageURL(modifiedCoverUrl)
+	return originalCoverUrl
 }
 
-func bookAuthorFromInfoNodeValue(bookInfoNodeValue string) string {
+// parseBookInfoNodeValue parses the value of the book info node
+// Returns author, publisher and date published.
+// See test for expected value format.
+func parseBookInfoNodeValue(bookInfoNodeValue string) (string, *time.Time) {
 	// Book info parts are separated by | the of which is the author
 	bookInfoParts := strings.Split(bookInfoNodeValue, "|")
-	bookAuthorPart := bookInfoParts[0]
+	bookAuthorPart := strings.TrimSpace(bookInfoParts[0])
+	publishDatePart := strings.TrimSpace(bookInfoParts[2])
 
 	// Strip out the "by" from the author part
 	bookAuthorFields := strings.Fields(bookAuthorPart)
@@ -130,5 +139,12 @@ func bookAuthorFromInfoNodeValue(bookInfoNodeValue string) string {
 	// Rejoin author fields
 	bookAuthor := strings.Join(bookAuthorFields, " ")
 
-	return bookAuthor
+	// Parse the date string according to the defined layout
+	var publishDate *time.Time
+	parsedPublishDate, err := time.Parse(publishDateLayout, publishDatePart)
+	if err == nil {
+		publishDate = &parsedPublishDate
+	}
+
+	return bookAuthor, publishDate
 }
