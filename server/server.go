@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 
-	"github.com/ahobsonsayers/abs-goodreads/goodreads"
 	"github.com/samber/lo"
 )
 
@@ -11,18 +10,26 @@ type server struct{}
 
 func NewServer() StrictServerInterface { return &server{} }
 
-func (*server) Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error) {
-	// Search book
-	goodreadsBooks, err := goodreads.DefaultClient.SearchBooks(ctx, request.Params.Query, request.Params.Author)
+func (*server) SearchGoodreads(
+	ctx context.Context,
+	request SearchGoodreadsRequestObject,
+) (SearchGoodreadsResponseObject, error) {
+	books, err := searchGoodreadsBooks(ctx, request.Params.Query, &request.Params.Query)
 	if err != nil {
-		return Search500JSONResponse{Error: lo.ToPtr(err.Error())}, nil
+		return SearchGoodreads500JSONResponse{N500JSONResponse{Error: lo.ToPtr(err.Error())}}, nil
 	}
 
-	books := make([]BookMetadata, 0, len(goodreadsBooks))
-	for _, goodreadsBook := range goodreadsBooks {
-		book := GoodreadsBookToAudioBookShelfBook(goodreadsBook)
-		books = append(books, book)
+	return SearchGoodreads200JSONResponse{N200JSONResponse{Matches: &books}}, nil
+}
+
+func (*server) SearchKindle(
+	ctx context.Context,
+	request SearchKindleRequestObject,
+) (SearchKindleResponseObject, error) {
+	books, err := searchKindleBooks(ctx, request.Region, request.Params.Query, &request.Params.Query)
+	if err != nil {
+		return SearchKindle500JSONResponse{N500JSONResponse{Error: lo.ToPtr(err.Error())}}, nil
 	}
 
-	return Search200JSONResponse{Matches: &books}, nil
+	return SearchKindle200JSONResponse{N200JSONResponse{Matches: &books}}, nil
 }

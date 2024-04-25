@@ -25,6 +25,20 @@ const (
 	Api_keyScopes = "api_key.Scopes"
 )
 
+// Defines values for SearchKindleParamsRegion.
+const (
+	Au SearchKindleParamsRegion = "au"
+	Ca SearchKindleParamsRegion = "ca"
+	De SearchKindleParamsRegion = "de"
+	Es SearchKindleParamsRegion = "es"
+	Fr SearchKindleParamsRegion = "fr"
+	In SearchKindleParamsRegion = "in"
+	It SearchKindleParamsRegion = "it"
+	Jp SearchKindleParamsRegion = "jp"
+	Uk SearchKindleParamsRegion = "uk"
+	Us SearchKindleParamsRegion = "us"
+)
+
 // BookMetadata defines model for BookMetadata.
 type BookMetadata struct {
 	Asin   *string `json:"asin,omitempty"`
@@ -54,26 +68,70 @@ type SeriesMetadata struct {
 	Series   string  `json:"series"`
 }
 
-// SearchParams defines parameters for Search.
-type SearchParams struct {
-	Query  string  `form:"query" json:"query"`
-	Author *string `form:"author,omitempty" json:"author,omitempty"`
+// Author defines model for author.
+type Author = string
+
+// Query defines model for query.
+type Query = string
+
+// N200 defines model for 200.
+type N200 struct {
+	Matches *[]BookMetadata `json:"matches,omitempty"`
 }
+
+// N400 defines model for 400.
+type N400 struct {
+	Error *string `json:"error,omitempty"`
+}
+
+// N401 defines model for 401.
+type N401 struct {
+	Error *string `json:"error,omitempty"`
+}
+
+// N500 defines model for 500.
+type N500 struct {
+	Error *string `json:"error,omitempty"`
+}
+
+// SearchGoodreadsParams defines parameters for SearchGoodreads.
+type SearchGoodreadsParams struct {
+	Query  Query   `form:"query" json:"query"`
+	Author *Author `form:"author,omitempty" json:"author,omitempty"`
+}
+
+// SearchKindleParams defines parameters for SearchKindle.
+type SearchKindleParams struct {
+	Query  Query   `form:"query" json:"query"`
+	Author *Author `form:"author,omitempty" json:"author,omitempty"`
+}
+
+// SearchKindleParamsRegion defines parameters for SearchKindle.
+type SearchKindleParamsRegion string
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Search for books
-	// (GET /search)
-	Search(w http.ResponseWriter, r *http.Request, params SearchParams)
+	// Search for books using goodreads
+	// (GET /goodreads/search)
+	SearchGoodreads(w http.ResponseWriter, r *http.Request, params SearchGoodreadsParams)
+	// Search for books using kindle
+	// (GET /kindle/{region}/search)
+	SearchKindle(w http.ResponseWriter, r *http.Request, region SearchKindleParamsRegion, params SearchKindleParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
 
-// Search for books
-// (GET /search)
-func (_ Unimplemented) Search(w http.ResponseWriter, r *http.Request, params SearchParams) {
+// Search for books using goodreads
+// (GET /goodreads/search)
+func (_ Unimplemented) SearchGoodreads(w http.ResponseWriter, r *http.Request, params SearchGoodreadsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Search for books using kindle
+// (GET /kindle/{region}/search)
+func (_ Unimplemented) SearchKindle(w http.ResponseWriter, r *http.Request, region SearchKindleParamsRegion, params SearchKindleParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -86,8 +144,8 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// Search operation middleware
-func (siw *ServerInterfaceWrapper) Search(w http.ResponseWriter, r *http.Request) {
+// SearchGoodreads operation middleware
+func (siw *ServerInterfaceWrapper) SearchGoodreads(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var err error
@@ -95,7 +153,7 @@ func (siw *ServerInterfaceWrapper) Search(w http.ResponseWriter, r *http.Request
 	ctx = context.WithValue(ctx, Api_keyScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params SearchParams
+	var params SearchGoodreadsParams
 
 	// ------------- Required query parameter "query" -------------
 
@@ -121,7 +179,61 @@ func (siw *ServerInterfaceWrapper) Search(w http.ResponseWriter, r *http.Request
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.Search(w, r, params)
+		siw.Handler.SearchGoodreads(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// SearchKindle operation middleware
+func (siw *ServerInterfaceWrapper) SearchKindle(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "region" -------------
+	var region SearchKindleParamsRegion
+
+	err = runtime.BindStyledParameterWithOptions("simple", "region", chi.URLParam(r, "region"), &region, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: false})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "region", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, Api_keyScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SearchKindleParams
+
+	// ------------- Required query parameter "query" -------------
+
+	if paramValue := r.URL.Query().Get("query"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "query"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "query", r.URL.Query(), &params.Query)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "query", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "author" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "author", r.URL.Query(), &params.Author)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "author", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SearchKindle(w, r, region, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -245,58 +357,114 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/search", wrapper.Search)
+		r.Get(options.BaseURL+"/goodreads/search", wrapper.SearchGoodreads)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/kindle/{region}/search", wrapper.SearchKindle)
 	})
 
 	return r
 }
 
-type SearchRequestObject struct {
-	Params SearchParams
-}
-
-type SearchResponseObject interface {
-	VisitSearchResponse(w http.ResponseWriter) error
-}
-
-type Search200JSONResponse struct {
+type N200JSONResponse struct {
 	Matches *[]BookMetadata `json:"matches,omitempty"`
 }
 
-func (response Search200JSONResponse) VisitSearchResponse(w http.ResponseWriter) error {
+type N400JSONResponse struct {
+	Error *string `json:"error,omitempty"`
+}
+
+type N401JSONResponse struct {
+	Error *string `json:"error,omitempty"`
+}
+
+type N500JSONResponse struct {
+	Error *string `json:"error,omitempty"`
+}
+
+type SearchGoodreadsRequestObject struct {
+	Params SearchGoodreadsParams
+}
+
+type SearchGoodreadsResponseObject interface {
+	VisitSearchGoodreadsResponse(w http.ResponseWriter) error
+}
+
+type SearchGoodreads200JSONResponse struct{ N200JSONResponse }
+
+func (response SearchGoodreads200JSONResponse) VisitSearchGoodreadsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type Search400JSONResponse struct {
-	Error *string `json:"error,omitempty"`
-}
+type SearchGoodreads400JSONResponse struct{ N400JSONResponse }
 
-func (response Search400JSONResponse) VisitSearchResponse(w http.ResponseWriter) error {
+func (response SearchGoodreads400JSONResponse) VisitSearchGoodreadsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(400)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type Search401JSONResponse struct {
-	Error *string `json:"error,omitempty"`
-}
+type SearchGoodreads401JSONResponse struct{ N401JSONResponse }
 
-func (response Search401JSONResponse) VisitSearchResponse(w http.ResponseWriter) error {
+func (response SearchGoodreads401JSONResponse) VisitSearchGoodreadsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(401)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type Search500JSONResponse struct {
-	Error *string `json:"error,omitempty"`
+type SearchGoodreads500JSONResponse struct{ N500JSONResponse }
+
+func (response SearchGoodreads500JSONResponse) VisitSearchGoodreadsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
-func (response Search500JSONResponse) VisitSearchResponse(w http.ResponseWriter) error {
+type SearchKindleRequestObject struct {
+	Region SearchKindleParamsRegion `json:"region,omitempty"`
+	Params SearchKindleParams
+}
+
+type SearchKindleResponseObject interface {
+	VisitSearchKindleResponse(w http.ResponseWriter) error
+}
+
+type SearchKindle200JSONResponse struct{ N200JSONResponse }
+
+func (response SearchKindle200JSONResponse) VisitSearchKindleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type SearchKindle400JSONResponse struct{ N400JSONResponse }
+
+func (response SearchKindle400JSONResponse) VisitSearchKindleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type SearchKindle401JSONResponse struct{ N401JSONResponse }
+
+func (response SearchKindle401JSONResponse) VisitSearchKindleResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type SearchKindle500JSONResponse struct{ N500JSONResponse }
+
+func (response SearchKindle500JSONResponse) VisitSearchKindleResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(500)
 
@@ -305,9 +473,12 @@ func (response Search500JSONResponse) VisitSearchResponse(w http.ResponseWriter)
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Search for books
-	// (GET /search)
-	Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error)
+	// Search for books using goodreads
+	// (GET /goodreads/search)
+	SearchGoodreads(ctx context.Context, request SearchGoodreadsRequestObject) (SearchGoodreadsResponseObject, error)
+	// Search for books using kindle
+	// (GET /kindle/{region}/search)
+	SearchKindle(ctx context.Context, request SearchKindleRequestObject) (SearchKindleResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -339,25 +510,52 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// Search operation middleware
-func (sh *strictHandler) Search(w http.ResponseWriter, r *http.Request, params SearchParams) {
-	var request SearchRequestObject
+// SearchGoodreads operation middleware
+func (sh *strictHandler) SearchGoodreads(w http.ResponseWriter, r *http.Request, params SearchGoodreadsParams) {
+	var request SearchGoodreadsRequestObject
 
 	request.Params = params
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.Search(ctx, request.(SearchRequestObject))
+		return sh.ssi.SearchGoodreads(ctx, request.(SearchGoodreadsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "Search")
+		handler = middleware(handler, "SearchGoodreads")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(SearchResponseObject); ok {
-		if err := validResponse.VisitSearchResponse(w); err != nil {
+	} else if validResponse, ok := response.(SearchGoodreadsResponseObject); ok {
+		if err := validResponse.VisitSearchGoodreadsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SearchKindle operation middleware
+func (sh *strictHandler) SearchKindle(w http.ResponseWriter, r *http.Request, region SearchKindleParamsRegion, params SearchKindleParams) {
+	var request SearchKindleRequestObject
+
+	request.Region = region
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SearchKindle(ctx, request.(SearchKindleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SearchKindle")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SearchKindleResponseObject); ok {
+		if err := validResponse.VisitSearchKindleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -368,18 +566,20 @@ func (sh *strictHandler) Search(w http.ResponseWriter, r *http.Request, params S
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8RVQU/jSgz+K5HfO1ZNeLx3yQ3errQVsKwoHHZRtZpO3GQgmQkeD1IX9b+vPAnNlgZY",
-	"tAdOTWL7s/3Zn/sA2jWts2jZQ/4AXlfYqPh47NztGbIqFCt5b8m1SGwwWpU3Vn5XjhrFkHcfJsDrFiEH",
-	"z2RsCZsJqMCVI3HdM2l3j9FSoNdkWjbOQg5XF6cJu4QrTKJHYhpV4hj2TtxIgiKQejTu5vjQWxJjE4/a",
-	"2cLDZGjGWB7yGctYIglgiZa6/g1j40eT9h8UkVrLu/HLXabih5FuamXLIJ2OoVrB42eIbMOyNr7C4iuq",
-	"lz3GrR7JPGnrb8IV5PBXOuxH2i9HOo/u290Y6dmHJRuux1thVb6RwuewNhMgvAuGsID8undbbOPd8gY1",
-	"C8CTive22eNdQKvxFXZeTt/77eePGDqQ4fVcKOwV1Jrvt7iOTMhKVqgKJJBRNxJ9dHX56fxi9u3ocnb+",
-	"edgX1ZoTXMNGUI1dOYmvjUbrY/V98NnsEiYQqBZg5tbnaepatN4F0jh1VKZ9kE/FdyAZ/g+eXZM8kpV8",
-	"IXdvusrukXynn2x6MM0kSkBVayCHw2k2zWACreIqNph6VKQreSyR9zU4j+Zk5ShZOncrApSZRF3Oiq1D",
-	"hCTVICN5yK97uu4C0npg6/F1GAhTwEl/0EaHNw7U36uXIheSxrdO2BP7P1kmP9pZRsvdbNva6NhJeuO7",
-	"AzTg7e5eo1hXb1Dfzl3eE8tmf/ueHko4P5G4f/+oaiQaPUa/k/9YFcmFKM5zV8jBOxVyZbtpmx9YSCX/",
-	"vRslM8tIVtXJHEn+8j5GrF8vR9z87c24XsgW+tA0itZjWtq8GhsTdYLareXUaVWP6r+7J7XYK+c5P8yy",
-	"DDaLzc8AAAD//7PW7zhGCAAA",
+	"H4sIAAAAAAAC/+xWTXPjNgz9Kxq0R43ldLcX3XbbTuvJbtNJsoc24+nQEiIzlkgGBDPjZvTfO6CkyB+y",
+	"07SHvfRiS8QD+AjiAXqGwjbOGjTsIX8Gp0g1yEjxTQVeW5InbSCHx4C0hRSMahDywZqCL9bYKIHx1onF",
+	"M2lTQdumvc+JCMMr4WPQhCXkTAHPBWwF7J01HiPD7+Zz+SusYTQcOTtX60KxtiZ78NbI2hjPkXVIrDvv",
+	"RnGx7h41YxMfviW8hxy+ycbEZJ2/zz5au/mMrErFCtp0YKeI1Daetl+wqwcsuKNboi9IO+EDOVxdit/7",
+	"/8QaibpLOc72q/t/VGVyjY8BPXdELr4SkS+mKx/9F5bC5PuvlpKFYSSj6uQG6Qkp+SnGOnYcyjJuuFcJ",
+	"R3SU15HuvaVGsVSILKSH7NIdgR2ZCvuE0XKQt+tPCduE15hERKIbVeFU7D2/iQ3KQGow7u/xY29JtEk8",
+	"FtaUHtLxMNrwuJ82jBWSBKzQ0IGYjjbdV0wK2q/2MxUXJk5TK1MFOelUVCPx+EQiXVjV2q+x/B3VecS0",
+	"1SPpN/SImwg/3SVS8GHFmuvpo7Cq3pjCU7Ha3b5618OWR3WdwgHjo2r20i9Mga9k5/z2PW45qSssAmne",
+	"3kgKewU5/ecGx8GxRlUijZPjw5fbX66uF398uF1c/TrWi3L6EredyrW5t+Jf6wKNj+x758+LW0ghUC2B",
+	"mZ3Ps8w6NN4GKnBmqcp6J58Jdkwy/BA82yYZkpX8RvZJd8yekHynn/nsYjYXLwmqnIYc3s3mszmk4BSv",
+	"4wGzytqSUJU+86ioWMtihXysxptoTu4tJStrNz4JXpsqefGHuE+n2EX54vDzjn13qt9Nl+8Iybqp3Kav",
+	"Avvu1S6nh/KU9wsuE9A4Cs9j3w/Yi3+CvdiZJ+exAooFGJpGyWfK68kWeLbRpqwxeyastDXtv7zBLsqJ",
+	"67scjAd3F9UgVTRqoWMh0KEYcxPqevczCk1oRIUqQAqFApkOkALGvi7FG8eTlr7+4EQbG/nZleso6//r",
+	"5+310191u9vt4nW+9Lm7paTBx0+Q7qb3a+iTLVQ92Xe6PlaLfW095+/mwmrZ/h0AAP//HMviW9sLAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

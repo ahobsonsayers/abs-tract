@@ -16,64 +16,57 @@ security:
   - api_key: []
 
 paths:
-  /search:
+  /goodreads/search:
     get:
-      description: Search for books
-      operationId: search
-      summary: Search for books
-      security:
-        - api_key: []
+      operationId: searchGoodreads
+      summary: Search for books using goodreads
+      description: Search for books using goodreads
       parameters:
-        - name: query
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: author
-          in: query
-          required: false
-          schema:
-            type: string
-
+        - $ref: "#/components/parameters/query"
+        - $ref: "#/components/parameters/author"
       responses:
         "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  matches:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/BookMetadata"
+          $ref: "#/components/responses/200"
         "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+          $ref: "#/components/responses/400"
         "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+          $ref: "#/components/responses/401"
         "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+          $ref: "#/components/responses/500"
+
+  /kindle/{region}/search:
+    get:
+      operationId: searchKindle
+      summary: Search for books using kindle
+      description: Search for books using kindle
+      parameters:
+        - provider:
+          name: region
+          in: path
+          schema:
+            type: string
+            enum:
+              - "au"
+              - "ca"
+              - "de"
+              - "es"
+              - "fr"
+              - "in"
+              - "it"
+              - "jp"
+              - "uk"
+              - "us"
+        - $ref: "#/components/parameters/query"
+        - $ref: "#/components/parameters/author"
+      responses:
+        "200":
+          $ref: "#/components/responses/200"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 
 components:
   securitySchemes:
@@ -139,3 +132,62 @@ components:
           type: string
         sequence:
           type: string
+
+  parameters:
+    query:
+      name: query
+      in: query
+      required: true
+      schema:
+        type: string
+
+    author:
+      name: author
+      in: query
+      required: false
+      schema:
+        type: string
+
+  responses:
+    200:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              matches:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookMetadata"
+
+    400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    500:
+      type: object
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
