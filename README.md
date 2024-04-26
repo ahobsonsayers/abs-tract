@@ -91,7 +91,7 @@ and entering the following details:
 ### Kindle
 
 - Name: **Kindle**
-- URL: **http://\<your_address\>:5555/kindle/\<your_region\>
+- URL: **http://\<your_address\>:5555/kindle/\<your_region\>**
 - Authorization Header Value: **\<leave this unset\>
 
 Region can be one of the following:
