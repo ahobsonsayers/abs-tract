@@ -33,8 +33,6 @@ jobs:
 
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v5
-        with:
-          version: v1.57
 
       - name: Run Lint
         run: task lint

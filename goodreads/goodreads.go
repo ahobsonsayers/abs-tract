@@ -155,7 +155,7 @@ func (c *Client) GetBooksByIds(ctx context.Context, bookIds []string) ([]Book, e
 		}
 	}
 
-	return books, nil
+	return validBooks, nil
 }
 
 // GetBookByTitle gets a book by its title and optionally an author (which can give a better match)
