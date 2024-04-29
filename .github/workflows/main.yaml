@@ -66,3 +66,13 @@ jobs:
 
       - name: Run test
         run: task test
+
+  build-push:
+    name: Build and Push
+    needs: [lint, test]
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    uses: ./.github/workflows/build_push.yaml
+    with:
+      commit: ${{ github.sha }}
+      image-tag: develop
+    secrets: inherit
