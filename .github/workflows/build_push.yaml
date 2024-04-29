@@ -42,11 +42,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Get image tags
+        id: tags
+        run: |
+          IFS=','
+          read -r -a old_tags <<<"${{ inputs.tags }}"
+          new_tags=()
+          for old_tag in "${old_tags[@]}"; do
+            new_tags+=("arranhs/abs-tract:$old_tag")
+          done
+          tags="${new_tags[*]}"
+          echo "tags=$tags" >>"$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
-          tags: arranhs/abs-tract:${{ inputs.tags }}
+          tags: ${{ steps.tags.outputs.tags }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
