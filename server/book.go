@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/ahobsonsayers/abs-goodreads/goodreads"
-	"github.com/ahobsonsayers/abs-goodreads/kindle"
+	"github.com/ahobsonsayers/abs-tract/goodreads"
+	"github.com/ahobsonsayers/abs-tract/kindle"
 	"github.com/samber/lo"
 )
 

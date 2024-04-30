@@ -35,7 +35,7 @@ func NewRouter() (http.Handler, error) {
 		// Includes recoverer middleware
 		httplog.RequestLogger(
 			httplog.NewLogger(
-				"abs-goodreads",
+				"abs-tract",
 				httplog.Options{
 					LogLevel:       slog.LevelDebug,
 					RequestHeaders: true,

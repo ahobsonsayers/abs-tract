@@ -22,11 +22,11 @@ tasks:
 
   build:
     cmds:
-      - go build -v -o bin/abs-goodreads
+      - go build -v -o bin/abs-tract
 
   build:docker:
     cmds:
-      - docker build . -t arranhs/abs-goodreads
+      - docker build . -t arranhs/abs-tract
 
   run:
     cmds:
@@ -37,6 +37,6 @@ tasks:
     cmds:
       - |
         docker run --rm \
-          --name abs-goodreads \
+          --name abs-tract \
           -p 5555:5555 \
-          arranhs/abs-goodreads
+          arranhs/abs-tract

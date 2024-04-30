@@ -1,10 +1,10 @@
 version: "3.8"
 services:
-  abs-goodreads:
-    image: arranhs/abs-goodreads
+  abs-tract:
+    image: arranhs/abs-tract
     build:
       context: .
-    container_name: abs-goodreads
+    container_name: abs-tract
     ports:
       - "5555:5555"
     restart: unless-stopped

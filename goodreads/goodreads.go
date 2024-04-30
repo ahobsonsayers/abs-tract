@@ -13,7 +13,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/ahobsonsayers/abs-tract/utils"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/orsinium-labs/enum"
 	"github.com/samber/lo"

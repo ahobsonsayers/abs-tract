@@ -3,7 +3,7 @@ package utils_test
 import (
 	"testing"
 
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/ahobsonsayers/abs-tract/utils"
 	"github.com/stretchr/testify/require"
 )
 

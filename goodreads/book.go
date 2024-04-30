@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/ahobsonsayers/abs-tract/utils"
 	"github.com/k3a/html2text"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"

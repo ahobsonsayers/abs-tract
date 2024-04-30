@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/ahobsonsayers/abs-tract/utils"
 	"github.com/samber/lo"
 	"golang.org/x/net/html"
 )

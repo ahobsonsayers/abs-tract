@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/ahobsonsayers/abs-goodreads/kindle"
+	"github.com/ahobsonsayers/abs-tract/kindle"
 	"github.com/stretchr/testify/require"
 )
 

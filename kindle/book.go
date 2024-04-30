@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ahobsonsayers/abs-goodreads/utils"
+	"github.com/ahobsonsayers/abs-tract/utils"
 	"github.com/antchfx/htmlquery"
 	"github.com/antchfx/xpath"
 	"golang.org/x/net/html"

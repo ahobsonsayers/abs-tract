@@ -1,18 +1,18 @@
 # Builder Image
 FROM golang:1.21 as builder
 
-WORKDIR /abs-goodreads
+WORKDIR /abs-tract
 COPY . .
 RUN go mod download
-RUN go build -v -o bin/abs-goodreads
+RUN go build -v -o bin/abs-tract
 
 # Ditribution Image
 FROM alpine:latest
 
 RUN apk add --no-cache libc6-compat
 
-COPY --from=builder /abs-goodreads/bin/abs-goodreads /abs-goodreads
+COPY --from=builder /abs-tract/bin/abs-tract /abs-tract
 
 EXPOSE 5555
 
-ENTRYPOINT ["/abs-goodreads"]
+ENTRYPOINT ["/abs-tract"]

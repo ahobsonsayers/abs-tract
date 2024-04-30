@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ahobsonsayers/abs-goodreads/kindle"
+	"github.com/ahobsonsayers/abs-tract/kindle"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )

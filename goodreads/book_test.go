@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/ahobsonsayers/abs-goodreads/goodreads"
+	"github.com/ahobsonsayers/abs-tract/goodreads"
 	"github.com/stretchr/testify/require"
 )
 
