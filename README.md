@@ -100,14 +100,16 @@ and enter the following details:
 ### Goodreads
 
 - Name: **GoodReads**
-- URL: **http://<your_address>:5555/goodreads**
-- Authorization Header Value: **<leave this unset>**
+- URL: `http://<your_address>:5555/goodreads`
+  - e.g. `192.168.1.100:5555/goodreads`
+- Authorization Header Value: **Leave this unset**
 
 ### Kindle
 
 - Name: **Kindle**
-- URL: **http://<your_address>:5555/kindle/<your_region>**
-- Authorization Header Value: **<leave this unset>**
+- URL: `http://<your_address>:5555/kindle/<your_region>`
+  - e.g. `192.168.1.100:5555/kindle/uk`
+- Authorization Header Value: **Leave this unset**
 
 Region can be one of the following:
 
@@ -121,10 +123,6 @@ Region can be one of the following:
 - jp - Japan
 - uk - United Kingdom
 - us - United States
-
-### Setup video walkthrough:
-
-https://github.com/ahobsonsayers/abs-tract/assets/32173585/54437af6-a17c-4458-bb82-479b183171da
 
 ## FAQ
 
