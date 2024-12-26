@@ -13,7 +13,9 @@ import (
 )
 
 var (
+	// These are dirty workarounds, but they seem to work
 	alternativeCoverRegex = regexp.MustCompile(`^\s*<i>.*[Aa]lternat(iv)?e cover.*</i>\s*$`)
+	breakTagRegex         = regexp.MustCompile(`<br\s*/?>`)
 	lastBracketRegex      = regexp.MustCompile(`^(.*)(\([^\(\)]*\))([^()]*)$`)
 )
 
@@ -139,9 +141,12 @@ func (e Edition) Subtitle() string {
 
 func (e *Edition) Sanitise() {
 	// Description can sometimes be html and contain preamble about alternative covers
+	// Break tags need to be specially handled to add new lines as html2text does
+	// not convert them to new lines properly
 	description := strings.TrimSpace(e.Description)
 	description = alternativeCoverRegex.ReplaceAllString(description, "")
-	description = html2text.HTML2Text(description)
+	description = breakTagRegex.ReplaceAllString(description, "\n")
+	description = html2text.HTML2TextWithOptions(description, html2text.WithUnixLineBreaks())
 	e.Description = description
 
 	// Get original cover image by cleaning the ul0

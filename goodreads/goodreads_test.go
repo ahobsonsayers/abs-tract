@@ -18,19 +18,19 @@ const (
 func TestGetBookById(t *testing.T) {
 	book, err := goodreads.DefaultClient.GetBookById(context.Background(), GameOfThronesBookId)
 	require.NoError(t, err)
-	checkTheHobbitBookDetails(t, book)
+	checkGameOfThronesBookDetails(t, book)
 }
 
 func TestGetBookByTitle(t *testing.T) {
 	book, err := goodreads.DefaultClient.GetBookByTitle(context.Background(), GameOfThronesBookTitle, nil)
 	require.NoError(t, err)
-	checkTheHobbitBookDetails(t, book)
+	checkGameOfThronesBookDetails(t, book)
 }
 
 func TestSearchTitle(t *testing.T) {
 	books, err := goodreads.DefaultClient.SearchBooks(context.Background(), GameOfThronesBookTitle, nil)
 	require.NoError(t, err)
-	checkTheHobbitBookDetails(t, books[0])
+	checkGameOfThronesBookDetails(t, books[0])
 }
 
 func TestSearchTitleAndAuthor(t *testing.T) {
@@ -40,10 +40,10 @@ func TestSearchTitleAndAuthor(t *testing.T) {
 		lo.ToPtr(GameOfThronesBookAuthor),
 	)
 	require.NoError(t, err)
-	checkTheHobbitBookDetails(t, books[0])
+	checkGameOfThronesBookDetails(t, books[0])
 }
 
-func checkTheHobbitBookDetails(t *testing.T, book goodreads.Book) {
+func checkGameOfThronesBookDetails(t *testing.T, book goodreads.Book) {
 	require.Equal(t, GameOfThronesBookTitle, book.Work.Title())
 	require.Equal(t, GameOfThronesBookId, book.BestEdition.Id)
 	require.Regexp(t, "1562726234l/13496.jpg$", book.BestEdition.ImageURL)
