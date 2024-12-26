@@ -147,7 +147,7 @@ func (c *Client) GetBooksByIds(ctx context.Context, bookIds []string) ([]Book, e
 	// Only return books whose work have a title
 	validBooks := make([]Book, 0, len(books))
 	for _, book := range books {
-		if book.Work.Title != "" {
+		if book.Work.FullTitle != "" {
 			validBooks = append(validBooks, book)
 		}
 	}

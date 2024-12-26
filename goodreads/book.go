@@ -65,7 +65,7 @@ func (b *Book) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 type Work struct {
-	Title         string `xml:"original_title"`
+	FullTitle     string `xml:"original_title"`
 	MediaType     string `xml:"media_type"`
 	EditionsCount int    `xml:"books_count"`
 
@@ -79,6 +79,23 @@ type Work struct {
 	RatingsCount       int    `xml:"ratings_count"`
 	ReviewsCount       int    `xml:"text_reviews_count"`
 	RatingDistribution string `xml:"rating_dist"`
+}
+
+// Title is the full title with any subtitle removed.
+// A subtitle is anything after the first : in the full title
+func (w Work) Title() string {
+	titleParts := strings.Split(w.FullTitle, ":")
+	return strings.TrimSpace(titleParts[0])
+}
+
+// Subtitle is the subtle part of the full title.
+// A subtitle is anything after the first : in the full title
+func (w Work) Subtitle() string {
+	colonIdx := strings.Index(w.FullTitle, ":")
+	if colonIdx == -1 {
+		return ""
+	}
+	return strings.TrimSpace(w.FullTitle[colonIdx+1:])
 }
 
 func (w Work) AverageRating() float64 {
