@@ -173,27 +173,3 @@ func (c *Client) GetBookByTitle(ctx context.Context, bookTitle string, bookAutho
 
 	return result.Work, nil
 }
-
-// SearchBooks search for a book by its title and optionally an author (which can give better results)
-// https://www.goodreads.com/api/index#search.books
-func (c *Client) SearchBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]Book, error) {
-	var bookOverviews []BookOverview
-	var err error
-	if bookAuthor == nil || *bookAuthor == "" {
-		// If author is not set, search for books by title
-		bookOverviews, err = c.searchBooksByTitle(ctx, bookTitle)
-	} else {
-		bookOverviews, err = c.searchBooksByTitleAndAuthor(ctx, bookTitle, *bookAuthor)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	// Get book details using their ids
-	bookDetails, err := c.GetBooksByIds(ctx, BookIds(bookOverviews))
-	if err != nil {
-		return nil, err
-	}
-
-	return bookDetails, nil
-}

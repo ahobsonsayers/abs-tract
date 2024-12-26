@@ -10,26 +10,42 @@ import (
 	"github.com/samber/lo"
 )
 
-func (c *Client) searchBooksByTitle(ctx context.Context, bookTitle string) ([]BookOverview, error) {
-	return c.searchBooksManyPages(ctx, searchBooksManyPagesInput{
-		Query:      bookTitle,
+// SearchBooks search for a book by its title and optionally an author (which can give better results)
+// https://www.goodreads.com/api/index#search.books
+func (c *Client) SearchBooks(ctx context.Context, title string, author *string) ([]Book, error) {
+	if author == nil || *author == "" {
+		// If author is not set, search for books by title
+		return c.searchBooksByTitle(ctx, title)
+	}
+
+	return c.searchBooksByTitleAndAuthor(ctx, title, *author)
+}
+
+func (c *Client) searchBooksByTitle(ctx context.Context, title string) ([]Book, error) {
+	bookOverviews, err := c.searchBooksManyPages(ctx, searchBooksManyPagesInput{
+		Query:      title,
 		SearchType: BookSearchTypeTitle,
 		Page:       1,
 		NumPages:   5,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return c.GetBooksByIds(ctx, BookIds(bookOverviews))
 }
 
 func (c *Client) searchBooksByTitleAndAuthor(
 	ctx context.Context,
-	bookTitle string,
-	bookAuthor string,
-) ([]BookOverview, error) {
+	title string,
+	author string,
+) ([]Book, error) {
 	// If searching by title and author, search by author ONLY first to get their books.
 	// We will then search the books for title.
 	// We do NOT search goodreads by title AND author together using the 'all' search type
 	// as goodreads returns awful results, including sometimes none at all.
 	bookOverviews, err := c.searchBooksManyPages(ctx, searchBooksManyPagesInput{
-		Query:      bookAuthor,
+		Query:      author,
 		SearchType: BookSearchTypeAuthor,
 		Page:       1,
 		NumPages:   15,
@@ -38,10 +54,14 @@ func (c *Client) searchBooksByTitleAndAuthor(
 		return nil, err
 	}
 
-	// In author books, sort books by similarity to title
-	sortBookOverviewsByTitleSimilarity(bookOverviews, bookTitle)
+	books, err := c.GetBooksByIds(ctx, BookIds(bookOverviews))
+	if err != nil {
+		return nil, err
+	}
 
-	return bookOverviews, nil
+	sortBookByTitleSimilarity(books, title)
+
+	return books, nil
 }
 
 type searchBooksManyPagesInput struct {

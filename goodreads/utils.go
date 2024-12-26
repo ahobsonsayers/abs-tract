@@ -9,20 +9,20 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func sortBookOverviewsByTitleSimilarity(bookOverviews []BookOverview, title string) {
+func sortBookByTitleSimilarity(books []Book, title string) {
 	normalisedDesiredTitle := normaliseBookTitle(title)
 
 	similarities := make(map[string]float64)
-	for _, book := range bookOverviews {
-		similarities[book.Title] = strutil.Similarity(
-			normaliseBookTitle(book.Title),
+	for _, book := range books {
+		similarities[book.Work.FullTitle] = strutil.Similarity(
+			normaliseBookTitle(book.Work.FullTitle),
 			normalisedDesiredTitle,
 			metrics.NewJaroWinkler(),
 		)
 	}
 
-	slices.SortStableFunc(bookOverviews, func(i, j BookOverview) bool {
-		return similarities[i.Title] > similarities[j.Title]
+	slices.SortStableFunc(books, func(i, j Book) bool {
+		return similarities[i.Work.FullTitle] > similarities[j.Work.FullTitle]
 	})
 }
 
