@@ -71,7 +71,7 @@ func (c *Client) get(
 
 func (c *Client) Search(ctx context.Context, title string, author *string) ([]Book, error) {
 	parameters := map[string]string{
-		"i": "digital-text",
+		"i": "stripbooks",
 		"k": title,
 	}
 	if author != nil && *author != "" {
