@@ -106,7 +106,7 @@ func (w Work) AverageRating() float64 {
 type Edition struct {
 	Id               string  `xml:"id"`
 	ISBN             *string `xml:"isbn13"`
-	Title            string  `xml:"title"`
+	FullTitle        string  `xml:"title"`
 	Description      string  `xml:"description"`
 	NumPages         string  `xml:"num_pages"`
 	ImageURL         string  `xml:"image_url"`
@@ -118,6 +118,23 @@ type Edition struct {
 	Publisher        string  `xml:"publisher"`
 	CountryCode      string  `xml:"country_code"`
 	Language         string  `xml:"language_code"`
+}
+
+// Title is the full title with any subtitle removed.
+// A subtitle is anything after the first : in the full title
+func (e Edition) Title() string {
+	titleParts := strings.Split(e.FullTitle, ":")
+	return strings.TrimSpace(titleParts[0])
+}
+
+// Subtitle is the subtle part of the full title.
+// A subtitle is anything after the first : in the full title
+func (e Edition) Subtitle() string {
+	colonIdx := strings.Index(e.FullTitle, ":")
+	if colonIdx == -1 {
+		return ""
+	}
+	return strings.TrimSpace(e.FullTitle[colonIdx+1:])
 }
 
 func (e *Edition) Sanitise() {
