@@ -14,9 +14,8 @@ func sortBookOverviewsByTitleSimilarity(bookOverviews []BookOverview, title stri
 
 	similarities := make(map[string]float64)
 	for _, book := range bookOverviews {
-		normalisedBookTitle := normaliseBookTitle(book.Title)
-		similarities[normalisedBookTitle] = strutil.Similarity(
-			normalisedBookTitle,
+		similarities[book.Title] = strutil.Similarity(
+			normaliseBookTitle(book.Title),
 			normalisedDesiredTitle,
 			metrics.NewJaroWinkler(),
 		)
