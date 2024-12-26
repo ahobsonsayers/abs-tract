@@ -59,6 +59,12 @@ func (c *Client) searchBooksByTitleAndAuthor(
 		return nil, err
 	}
 
+	// If specified title is empty (or only made up of spaces), simply return the
+	// author books as returned by goodreads - these will be ordered by popularity.
+	if strings.TrimSpace(title) == "" {
+		return books, nil
+	}
+
 	sortBookByTitleSimilarity(books, title)
 
 	return books, nil
