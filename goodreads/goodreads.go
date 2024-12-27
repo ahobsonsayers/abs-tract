@@ -29,11 +29,6 @@ var (
 		goodreadsUrl: utils.CloneURL(defaultGoodreadsUrl),
 		apiKey:       DefaultAPIKey,
 	}
-
-	bookSearchTypeEnum   = enum.NewBuilder[string, BookSearchType]()
-	BookSearchTypeTitle  = bookSearchTypeEnum.Add(BookSearchType{"title"})
-	BookSearchTypeAuthor = bookSearchTypeEnum.Add(BookSearchType{"author"})
-	BookSearchTypes      = bookSearchTypeEnum.Enum()
 )
 
 type BookSearchType enum.Member[string]

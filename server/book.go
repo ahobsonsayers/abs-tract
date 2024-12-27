@@ -15,6 +15,11 @@ func searchGoodreadsBooks(ctx context.Context, bookTitle string, bookAuthor *str
 		return nil, err
 	}
 
+	// Limit number of books to 20
+	if len(goodreadsBooks) > 20 {
+		goodreadsBooks = goodreadsBooks[:20]
+	}
+
 	books := make([]BookMetadata, 0, len(goodreadsBooks))
 	for _, goodreadsBook := range goodreadsBooks {
 		book := goodreadsBookToBookMetadata(goodreadsBook)
@@ -38,6 +43,11 @@ func searchKindleBooks(
 	kindleBooks, err := kindleClient.Search(ctx, bookTitle, bookAuthor)
 	if err != nil {
 		return nil, err
+	}
+
+	// Limit number of books to 20
+	if len(kindleBooks) > 20 {
+		kindleBooks = kindleBooks[:20]
 	}
 
 	books := make([]BookMetadata, 0, len(kindleBooks))

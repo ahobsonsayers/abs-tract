@@ -7,11 +7,23 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/orsinium-labs/enum"
 	"github.com/samber/lo"
 )
 
-// SearchBooks search for a book by its title and optionally an author (which can give better results)
-// https://www.goodreads.com/api/index#search.books
+var (
+	bookSearchTypeEnum = enum.NewBuilder[string, BookSearchType]()
+
+	BookSearchTypeTitle  = bookSearchTypeEnum.Add(BookSearchType{"title"})
+	BookSearchTypeAuthor = bookSearchTypeEnum.Add(BookSearchType{"author"})
+	BookSearchTypeAll    = bookSearchTypeEnum.Add(BookSearchType{"all"})
+
+	BookSearchTypes = bookSearchTypeEnum.Enum()
+)
+
+// SearchBooks search for a book by its title and optionally an author (which can give better ordered results).
+// Returns the first 10 pages of books.
+// See: https://www.goodreads.com/api/index#search.books
 func (c *Client) SearchBooks(ctx context.Context, title string, author *string) ([]Book, error) {
 	if author == nil || *author == "" {
 		// If author is not set, search for books by title
@@ -26,7 +38,21 @@ func (c *Client) searchBooksByTitle(ctx context.Context, title string) ([]Book, 
 		Query:      title,
 		SearchType: BookSearchTypeTitle,
 		Page:       1,
-		NumPages:   5,
+		NumPages:   10,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return c.GetBooksByIds(ctx, BookIds(bookOverviews))
+}
+
+func (c *Client) searchBooksByAuthor(ctx context.Context, author string) ([]Book, error) {
+	bookOverviews, err := c.searchBooksManyPages(ctx, searchBooksManyPagesInput{
+		Query:      author,
+		SearchType: BookSearchTypeAuthor,
+		Page:       1,
+		NumPages:   10,
 	})
 	if err != nil {
 		return nil, err
@@ -40,32 +66,16 @@ func (c *Client) searchBooksByTitleAndAuthor(
 	title string,
 	author string,
 ) ([]Book, error) {
-	// If searching by title and author, search by author ONLY first to get their books.
-	// We will then search the books for title.
-	// We do NOT search goodreads by title AND author together using the 'all' search type
-	// as goodreads returns awful results, including sometimes none at all.
-	bookOverviews, err := c.searchBooksManyPages(ctx, searchBooksManyPagesInput{
-		Query:      author,
-		SearchType: BookSearchTypeAuthor,
-		Page:       1,
-		NumPages:   15,
-	})
+	// If searching by title and author, search by title ONLY first.
+	// We will then sort books but author similarity.
+	// We do NOT search goodreads by title AND author together as goodreads
+	// returns awful results, including sometimes none at all.
+	books, err := c.searchBooksByTitle(ctx, title)
 	if err != nil {
 		return nil, err
 	}
 
-	books, err := c.GetBooksByIds(ctx, BookIds(bookOverviews))
-	if err != nil {
-		return nil, err
-	}
-
-	// If specified title is empty (or only made up of spaces), simply return the
-	// author books as returned by goodreads - these will be ordered by popularity.
-	if strings.TrimSpace(title) == "" {
-		return books, nil
-	}
-
-	sortBookByTitleSimilarity(books, title)
+	sortBookByAuthorSimilarity(books, author)
 
 	return books, nil
 }
@@ -142,8 +152,8 @@ func (c *Client) searchBooksSinglePage(ctx context.Context, input searchBooksSin
 		return nil, nil
 	}
 	if !BookSearchTypes.Contains(input.SearchType) {
-		// Default to title search
-		input.SearchType = BookSearchTypeTitle
+		// Default to all search
+		input.SearchType = BookSearchTypeAll
 	}
 	if input.Page < 1 {
 		input.Page = 1

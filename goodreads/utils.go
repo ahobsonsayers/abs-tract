@@ -1,7 +1,6 @@
 package goodreads
 
 import (
-	"math"
 	"regexp"
 	"strings"
 
@@ -10,45 +9,51 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func sortBookByTitleSimilarity(books []Book, title string) {
-	normalisedDesiredTitle := normaliseBookTitle(title)
+func sortBookByAuthorSimilarity(books []Book, author string) {
+	normalisedDesiredAuthor := normaliseString(author)
 
-	// Get the best similarity from the work and best edition titles.
-	// This is useful if the tiles differ in different regions.
-	similarities := make(map[string]float64)
+	// Get the best similarity of all authors of the book
+	authorSimilarities := make(map[string]float64)
 	for _, book := range books {
-		workTitleSimilarity := strutil.Similarity(
-			normaliseBookTitle(book.Work.FullTitle),
-			normalisedDesiredTitle,
-			metrics.NewJaroWinkler(),
-		)
-		bestEditionTitleSimilarity := strutil.Similarity(
-			normaliseBookTitle(book.BestEdition.FullTitle),
-			normalisedDesiredTitle,
-			metrics.NewJaroWinkler(),
-		)
-		similarities[book.BestEdition.Id] = math.Max(workTitleSimilarity, bestEditionTitleSimilarity)
+		bestAuthorSimilarity := 0.0
+		for _, author := range book.Authors {
+			authorSimilarity := strutil.Similarity(
+				normaliseString(author.Name),
+				normalisedDesiredAuthor,
+				metrics.NewJaroWinkler(),
+			)
+			if authorSimilarity > bestAuthorSimilarity {
+				bestAuthorSimilarity = authorSimilarity
+			}
+		}
+		authorSimilarities[book.BestEdition.Id] = bestAuthorSimilarity
 	}
 
 	slices.SortStableFunc(books, func(i, j Book) bool {
-		return similarities[i.BestEdition.Id] > similarities[j.BestEdition.Id]
+		return authorSimilarities[i.BestEdition.Id] > authorSimilarities[j.BestEdition.Id]
 	})
 }
 
 var (
 	spaceRegex        = regexp.MustCompile(`\s+`)
-	alphanumericRegex = regexp.MustCompile(`[^a-z0-9]`)
+	alphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9]`)
 )
 
-func normaliseBookTitle(title string) string {
+// normaliseString normalises a string (e.g. title or author) by:
+// - Replacing (normalising) all whitespace with a single space character
+// - Removing any leading or training whitespace
+// - Removing any non alpha numerical characters
+// - Converting text to lowercase
+// - Removing the "the " prefix
+func normaliseString(s string) string {
 	// Normalise and trim whitespace
-	title = spaceRegex.ReplaceAllString(title, " ")
-	title = strings.TrimSpace(title)
+	s = spaceRegex.ReplaceAllString(s, " ")
+	s = strings.TrimSpace(s)
 
 	// Normalise and trim text
-	title = strings.ToLower(title)
-	title = alphanumericRegex.ReplaceAllString(title, "")
-	title = strings.TrimPrefix(title, "the ")
+	s = alphanumericRegex.ReplaceAllString(s, "")
+	s = strings.ToLower(s)
+	s = strings.TrimPrefix(s, "the ")
 
-	return title
+	return s
 }
