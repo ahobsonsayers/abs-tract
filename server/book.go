@@ -51,8 +51,8 @@ func searchKindleBooks(
 
 func goodreadsBookToBookMetadata(goodreadsBook goodreads.Book) BookMetadata {
 	var subtitle *string
-	if goodreadsBook.Work.Subtitle() != "" {
-		subtitle = lo.ToPtr(goodreadsBook.Work.Subtitle())
+	if goodreadsBook.BestEdition.Subtitle() != "" {
+		subtitle = lo.ToPtr(goodreadsBook.BestEdition.Subtitle())
 	}
 
 	var authorName *string
@@ -76,7 +76,7 @@ func goodreadsBookToBookMetadata(goodreadsBook goodreads.Book) BookMetadata {
 
 	return BookMetadata{
 		// Work Fields
-		Title:         goodreadsBook.Work.Title(),
+		Title:         goodreadsBook.BestEdition.Title(),
 		Subtitle:      subtitle,
 		Author:        authorName,
 		PublishedYear: lo.ToPtr(strconv.Itoa(goodreadsBook.Work.PublicationYear)),

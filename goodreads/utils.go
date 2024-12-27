@@ -1,6 +1,7 @@
 package goodreads
 
 import (
+	"math"
 	"regexp"
 	"strings"
 
@@ -12,17 +13,25 @@ import (
 func sortBookByTitleSimilarity(books []Book, title string) {
 	normalisedDesiredTitle := normaliseBookTitle(title)
 
+	// Get the best similarity from the work and best edition titles.
+	// This is useful if the tiles differ in different regions.
 	similarities := make(map[string]float64)
 	for _, book := range books {
-		similarities[book.Work.FullTitle] = strutil.Similarity(
+		workTitleSimilarity := strutil.Similarity(
 			normaliseBookTitle(book.Work.FullTitle),
 			normalisedDesiredTitle,
 			metrics.NewJaroWinkler(),
 		)
+		bestEditionTitleSimilarity := strutil.Similarity(
+			normaliseBookTitle(book.BestEdition.FullTitle),
+			normalisedDesiredTitle,
+			metrics.NewJaroWinkler(),
+		)
+		similarities[book.BestEdition.Id] = math.Max(workTitleSimilarity, bestEditionTitleSimilarity)
 	}
 
 	slices.SortStableFunc(books, func(i, j Book) bool {
-		return similarities[i.Work.FullTitle] > similarities[j.Work.FullTitle]
+		return similarities[i.BestEdition.Id] > similarities[j.BestEdition.Id]
 	})
 }
 
