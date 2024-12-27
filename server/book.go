@@ -15,6 +15,11 @@ func searchGoodreadsBooks(ctx context.Context, bookTitle string, bookAuthor *str
 		return nil, err
 	}
 
+	// Limit number of books to 20
+	if len(goodreadsBooks) > 20 {
+		goodreadsBooks = goodreadsBooks[:20]
+	}
+
 	books := make([]BookMetadata, 0, len(goodreadsBooks))
 	for _, goodreadsBook := range goodreadsBooks {
 		book := goodreadsBookToBookMetadata(goodreadsBook)
@@ -40,6 +45,11 @@ func searchKindleBooks(
 		return nil, err
 	}
 
+	// Limit number of books to 20
+	if len(kindleBooks) > 20 {
+		kindleBooks = kindleBooks[:20]
+	}
+
 	books := make([]BookMetadata, 0, len(kindleBooks))
 	for _, kindleBook := range kindleBooks {
 		book := kindleBookToBookMetadata(kindleBook)
@@ -50,6 +60,11 @@ func searchKindleBooks(
 }
 
 func goodreadsBookToBookMetadata(goodreadsBook goodreads.Book) BookMetadata {
+	var subtitle *string
+	if goodreadsBook.BestEdition.Subtitle() != "" {
+		subtitle = lo.ToPtr(goodreadsBook.BestEdition.Subtitle())
+	}
+
 	var authorName *string
 	if len(goodreadsBook.Authors) != 0 {
 		authorName = &goodreadsBook.Authors[0].Name
@@ -71,7 +86,8 @@ func goodreadsBookToBookMetadata(goodreadsBook goodreads.Book) BookMetadata {
 
 	return BookMetadata{
 		// Work Fields
-		Title:         goodreadsBook.Work.Title,
+		Title:         goodreadsBook.BestEdition.Title(),
+		Subtitle:      subtitle,
 		Author:        authorName,
 		PublishedYear: lo.ToPtr(strconv.Itoa(goodreadsBook.Work.PublicationYear)),
 		// Edition Fields

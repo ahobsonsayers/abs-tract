@@ -3,6 +3,7 @@ module github.com/ahobsonsayers/abs-tract
 go 1.21
 
 require (
+	github.com/adrg/strutil v0.3.1
 	github.com/antchfx/htmlquery v1.3.1
 	github.com/antchfx/xpath v1.3.0
 	github.com/deckarep/golang-set/v2 v2.6.0
@@ -12,7 +13,6 @@ require (
 	github.com/go-chi/httplog/v2 v2.0.9
 	github.com/jinzhu/inflection v1.0.0
 	github.com/k3a/html2text v1.2.1
-	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/orsinium-labs/enum v1.4.0

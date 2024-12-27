@@ -13,7 +13,9 @@ import (
 )
 
 var (
+	// These are dirty workarounds, but they seem to work
 	alternativeCoverRegex = regexp.MustCompile(`^\s*<i>.*[Aa]lternat(iv)?e cover.*</i>\s*$`)
+	breakTagRegex         = regexp.MustCompile(`<br\s*/?>`)
 	lastBracketRegex      = regexp.MustCompile(`^(.*)(\([^\(\)]*\))([^()]*)$`)
 )
 
@@ -65,7 +67,7 @@ func (b *Book) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 type Work struct {
-	Title         string `xml:"original_title"`
+	FullTitle     string `xml:"original_title"`
 	MediaType     string `xml:"media_type"`
 	EditionsCount int    `xml:"books_count"`
 
@@ -81,6 +83,23 @@ type Work struct {
 	RatingDistribution string `xml:"rating_dist"`
 }
 
+// Title is the full title with any subtitle removed.
+// A subtitle is anything after the first : in the full title
+func (w Work) Title() string {
+	titleParts := strings.Split(w.FullTitle, ":")
+	return strings.TrimSpace(titleParts[0])
+}
+
+// Subtitle is the subtle part of the full title.
+// A subtitle is anything after the first : in the full title
+func (w Work) Subtitle() string {
+	colonIdx := strings.Index(w.FullTitle, ":")
+	if colonIdx == -1 {
+		return ""
+	}
+	return strings.TrimSpace(w.FullTitle[colonIdx+1:])
+}
+
 func (w Work) AverageRating() float64 {
 	averageRating := float64(w.RatingsSum) / float64(w.RatingsCount)
 	return math.Round(averageRating*100) / 100 // Round to two decimal places
@@ -89,7 +108,7 @@ func (w Work) AverageRating() float64 {
 type Edition struct {
 	Id               string  `xml:"id"`
 	ISBN             *string `xml:"isbn13"`
-	Title            string  `xml:"title"`
+	FullTitle        string  `xml:"title"`
 	Description      string  `xml:"description"`
 	NumPages         string  `xml:"num_pages"`
 	ImageURL         string  `xml:"image_url"`
@@ -103,11 +122,31 @@ type Edition struct {
 	Language         string  `xml:"language_code"`
 }
 
+// Title is the full title with any subtitle removed.
+// A subtitle is anything after the first : in the full title
+func (e Edition) Title() string {
+	titleParts := strings.Split(e.FullTitle, ":")
+	return strings.TrimSpace(titleParts[0])
+}
+
+// Subtitle is the subtle part of the full title.
+// A subtitle is anything after the first : in the full title
+func (e Edition) Subtitle() string {
+	colonIdx := strings.Index(e.FullTitle, ":")
+	if colonIdx == -1 {
+		return ""
+	}
+	return strings.TrimSpace(e.FullTitle[colonIdx+1:])
+}
+
 func (e *Edition) Sanitise() {
 	// Description can sometimes be html and contain preamble about alternative covers
+	// Break tags need to be specially handled to add new lines as html2text does
+	// not convert them to new lines properly
 	description := strings.TrimSpace(e.Description)
 	description = alternativeCoverRegex.ReplaceAllString(description, "")
-	description = html2text.HTML2Text(description)
+	description = breakTagRegex.ReplaceAllString(description, "\n")
+	description = html2text.HTML2TextWithOptions(description, html2text.WithUnixLineBreaks())
 	e.Description = description
 
 	// Get original cover image by cleaning the ul0
