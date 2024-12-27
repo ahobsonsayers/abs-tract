@@ -25,12 +25,25 @@ var (
 // Returns the first 10 pages of books.
 // See: https://www.goodreads.com/api/index#search.books
 func (c *Client) SearchBooks(ctx context.Context, title string, author *string) ([]Book, error) {
-	if author == nil || *author == "" {
-		// If author is not set, search for books by title
-		return c.searchBooksByTitle(ctx, title)
+	// Normalise title and author to make searching more consistent
+	normalisedTitle := normaliseString(title)
+	normalisedAuthor := normaliseString(lo.FromPtr(author))
+
+	switch {
+	case normalisedTitle != "" && normalisedAuthor != "":
+		// If both title and author are set
+		return c.searchBooksByTitleAndAuthor(ctx, title, normalisedAuthor)
+
+	case normalisedTitle != "":
+		// If only title is set
+		return c.searchBooksByTitle(ctx, normalisedTitle)
+
+	case normalisedAuthor != "":
+		// If only author is set
+		return c.searchBooksByAuthor(ctx, normalisedAuthor)
 	}
 
-	return c.searchBooksByTitleAndAuthor(ctx, title, *author)
+	return nil, nil
 }
 
 func (c *Client) searchBooksByTitle(ctx context.Context, title string) ([]Book, error) {
