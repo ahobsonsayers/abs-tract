@@ -36,13 +36,13 @@ func sortBookByAuthorSimilarity(books []Book, author string) {
 
 var (
 	spaceRegex        = regexp.MustCompile(`\s+`)
-	alphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9]`)
+	alphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9 ]`)
 )
 
-// normaliseString normalises a string (e.g. title or author) by:
+// normaliseString normalises a string (e.g. a title or author) by:
 // - Replacing (normalising) all whitespace with a single space character
 // - Removing any leading or training whitespace
-// - Removing any non alpha numerical characters
+// - Removing any non alpha, numerical or space characters
 // - Converting text to lowercase
 // - Removing the "the " prefix
 func normaliseString(s string) string {
