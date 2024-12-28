@@ -10,14 +10,14 @@ import (
 )
 
 const (
-	TheHobbitBookTitle  = "The Hobbit"
-	TheHobbitBookAuthor = "J. R. R. Tolkien"
+	TheHobbitTitle  = "The Hobbit"
+	TheHobbitAuthor = "J. R. R. Tolkien"
 )
 
 func TestSearchBook(t *testing.T) {
 	t.Skip("Fails in CI")
 	// Should return https://www.amazon.com/dp/B007978NU6
-	books, err := kindle.DefaultClient.Search(context.Background(), TheHobbitBookTitle, lo.ToPtr(TheHobbitBookAuthor))
+	books, err := kindle.DefaultClient.Search(context.Background(), TheHobbitTitle, lo.ToPtr(TheHobbitAuthor))
 	require.NoError(t, err)
 	require.NotEmpty(t, books)
 

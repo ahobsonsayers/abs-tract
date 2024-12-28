@@ -9,8 +9,8 @@ import (
 	"github.com/samber/lo"
 )
 
-func searchGoodreadsBooks(ctx context.Context, bookTitle string, bookAuthor *string) ([]BookMetadata, error) {
-	goodreadsBooks, err := goodreads.DefaultClient.SearchBooks(ctx, bookTitle, bookAuthor)
+func searchGoodreadsBooks(ctx context.Context, title string, author *string) ([]BookMetadata, error) {
+	goodreadsBooks, err := goodreads.DefaultClient.SearchBooks(ctx, title, author)
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +32,15 @@ func searchGoodreadsBooks(ctx context.Context, bookTitle string, bookAuthor *str
 func searchKindleBooks(
 	ctx context.Context,
 	countryCode SearchKindleParamsRegion,
-	bookTitle string,
-	bookAuthor *string,
+	title string,
+	author *string,
 ) ([]BookMetadata, error) {
 	kindleClient, err := kindle.NewClient(nil, lo.ToPtr(string(countryCode)))
 	if err != nil {
 		return nil, err
 	}
 
-	kindleBooks, err := kindleClient.Search(ctx, bookTitle, bookAuthor)
+	kindleBooks, err := kindleClient.Search(ctx, title, author)
 	if err != nil {
 		return nil, err
 	}

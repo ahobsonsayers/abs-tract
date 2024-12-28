@@ -144,10 +144,10 @@ func (c *Client) GetBooksByIds(ctx context.Context, bookIds []string) ([]Book, e
 
 // GetBookByTitle gets a book by its title and optionally an author (which can give a better match)
 // https://www.goodreads.com/api/index#book.title
-func (c *Client) GetBookByTitle(ctx context.Context, bookTitle string, bookAuthor *string) (Book, error) {
-	queryParams := map[string]string{"title": bookTitle}
-	if bookAuthor != nil && *bookAuthor != "" {
-		queryParams["author"] = *bookAuthor
+func (c *Client) GetBookByTitle(ctx context.Context, title string, author *string) (Book, error) {
+	queryParams := map[string]string{"title": title}
+	if author != nil && *author != "" {
+		queryParams["author"] = *author
 	}
 
 	var result struct {

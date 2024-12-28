@@ -10,25 +10,25 @@ import (
 )
 
 const (
-	TheHobbitBookId     = "5907"
-	TheHobbitBookTitle  = "The Hobbit"
-	TheHobbitBookAuthor = "J.R.R. Tolkien"
+	TheHobbitId     = "5907"
+	TheHobbitTitle  = "The Hobbit"
+	TheHobbitAuthor = "J.R.R. Tolkien"
 )
 
 func TestGetBookById(t *testing.T) {
-	book, err := goodreads.DefaultClient.GetBookById(context.Background(), TheHobbitBookId)
+	book, err := goodreads.DefaultClient.GetBookById(context.Background(), TheHobbitId)
 	require.NoError(t, err)
 	checkTheHobbitBookDetails(t, book)
 }
 
 func TestGetBookByTitle(t *testing.T) {
-	book, err := goodreads.DefaultClient.GetBookByTitle(context.Background(), TheHobbitBookTitle, nil)
+	book, err := goodreads.DefaultClient.GetBookByTitle(context.Background(), TheHobbitTitle, nil)
 	require.NoError(t, err)
 	checkTheHobbitBookDetails(t, book)
 }
 
 func TestSearchTitle(t *testing.T) {
-	books, err := goodreads.DefaultClient.SearchBooks(context.Background(), TheHobbitBookTitle, nil)
+	books, err := goodreads.DefaultClient.SearchBooks(context.Background(), TheHobbitTitle, nil)
 	require.NoError(t, err)
 	checkTheHobbitBookDetails(t, books[0])
 }
@@ -36,19 +36,19 @@ func TestSearchTitle(t *testing.T) {
 func TestSearchTitleAndAuthor(t *testing.T) {
 	books, err := goodreads.DefaultClient.SearchBooks(
 		context.Background(),
-		TheHobbitBookTitle,
-		lo.ToPtr(TheHobbitBookAuthor),
+		TheHobbitTitle,
+		lo.ToPtr(TheHobbitAuthor),
 	)
 	require.NoError(t, err)
 	checkTheHobbitBookDetails(t, books[0])
 }
 
 func checkTheHobbitBookDetails(t *testing.T, book goodreads.Book) {
-	require.Equal(t, TheHobbitBookTitle, book.Work.Title())
-	require.Equal(t, TheHobbitBookId, book.BestEdition.Id)
+	require.Equal(t, TheHobbitTitle, book.Work.Title())
+	require.Equal(t, TheHobbitId, book.BestEdition.Id)
 	require.Regexp(t, "1546071216l/5907.jpg$", book.BestEdition.ImageURL)
 	require.Equal(t, "English", book.BestEdition.Language)
-	require.Equal(t, TheHobbitBookAuthor, book.Authors[0].Name)
+	require.Equal(t, TheHobbitAuthor, book.Authors[0].Name)
 	require.Equal(t, "Middle Earth", book.Series[0].Series.Title)
 	require.Equal(t, "0", *book.Series[0].BookPosition)
 	require.EqualValues(t, []string{"Fantasy", "Fiction", "Classic"}, book.Genres)
