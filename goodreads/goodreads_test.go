@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ahobsonsayers/abs-tract/goodreads"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,8 +36,8 @@ func TestSearchTitle(t *testing.T) {
 func TestSearchTitleAndAuthor(t *testing.T) {
 	books, err := goodreads.DefaultClient.SearchBooks(
 		context.Background(),
-		"Mike at Wrykyn",
-		nil,
+		TheHobbitTitle,
+		lo.ToPtr(TheHobbitAuthor),
 	)
 	require.NoError(t, err)
 	checkTheHobbitBookDetails(t, books[0])
