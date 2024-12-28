@@ -15,9 +15,13 @@ const (
 )
 
 func TestSearchBook(t *testing.T) {
-	t.Skip("Fails in CI")
+	// t.Skip("Fails in CI")
 	// Should return https://www.amazon.com/dp/B007978NU6
-	books, err := kindle.DefaultClient.Search(context.Background(), TheHobbitTitle, lo.ToPtr(TheHobbitAuthor))
+	books, err := kindle.DefaultClient.Search(
+		context.Background(),
+		TheHobbitTitle,
+		lo.ToPtr(TheHobbitAuthor),
+	)
 	require.NoError(t, err)
 	require.NotEmpty(t, books)
 
