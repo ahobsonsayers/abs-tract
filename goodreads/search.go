@@ -185,12 +185,5 @@ func (c *Client) searchBooksSinglePage(ctx context.Context, input searchBooksSin
 		return nil, err
 	}
 
-	// Sanitise the books
-	books := make([]BookOverview, 0, len(unmarshaller.Books))
-	for _, book := range unmarshaller.Books {
-		book.Sanitise()
-		books = append(books, book)
-	}
-
-	return books, nil
+	return unmarshaller.Books, nil
 }

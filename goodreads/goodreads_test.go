@@ -11,7 +11,7 @@ import (
 
 const (
 	TheHobbitId     = "5907"
-	TheHobbitTitle  = "The Hobbit"
+	TheHobbitTitle  = "The Hobbit, or There and Back Again"
 	TheHobbitAuthor = "J.R.R. Tolkien"
 )
 
@@ -44,7 +44,7 @@ func TestSearchTitleAndAuthor(t *testing.T) {
 }
 
 func checkTheHobbitBookDetails(t *testing.T, book goodreads.Book) {
-	require.Equal(t, TheHobbitTitle, book.Work.Title())
+	require.Equal(t, TheHobbitTitle, book.BestEdition.Title())
 	require.Equal(t, TheHobbitId, book.BestEdition.Id)
 	require.Regexp(t, "1546071216l/5907.jpg$", book.BestEdition.ImageURL)
 	require.Equal(t, "English", book.BestEdition.Language)
