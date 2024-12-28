@@ -114,9 +114,9 @@ type Edition struct {
 	ImageURL         string  `xml:"image_url"`
 	URL              string  `xml:"url"`
 	Format           string  `xml:"format"`
-	PublicationYear  string  `xml:"publication_year"`
-	PublicationMonth string  `xml:"publication_month"`
-	PublicationDay   string  `xml:"publication_day"`
+	PublicationYear  int     `xml:"publication_year"`
+	PublicationMonth int     `xml:"publication_month"`
+	PublicationDay   int     `xml:"publication_day"`
 	Publisher        string  `xml:"publisher"`
 	CountryCode      string  `xml:"country_code"`
 	Language         string  `xml:"language_code"`

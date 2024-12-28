@@ -139,15 +139,7 @@ func (c *Client) GetBooksByIds(ctx context.Context, bookIds []string) ([]Book, e
 		return nil, errs
 	}
 
-	// Only return books whose work have a title
-	validBooks := make([]Book, 0, len(books))
-	for _, book := range books {
-		if book.Work.FullTitle != "" {
-			validBooks = append(validBooks, book)
-		}
-	}
-
-	return validBooks, nil
+	return books, nil
 }
 
 // GetBookByTitle gets a book by its title and optionally an author (which can give a better match)

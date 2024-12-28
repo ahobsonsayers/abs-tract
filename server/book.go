@@ -65,9 +65,16 @@ func goodreadsBookToBookMetadata(goodreadsBook goodreads.Book) BookMetadata {
 		subtitle = lo.ToPtr(goodreadsBook.BestEdition.Subtitle())
 	}
 
-	var authorName *string
+	var author *string
 	if len(goodreadsBook.Authors) != 0 {
-		authorName = &goodreadsBook.Authors[0].Name
+		author = &goodreadsBook.Authors[0].Name
+	}
+
+	var publicationYear *string
+	if goodreadsBook.Work.PublicationYear != 0 {
+		publicationYear = lo.ToPtr(strconv.Itoa(goodreadsBook.Work.PublicationYear))
+	} else if goodreadsBook.BestEdition.PublicationYear != 0 {
+		publicationYear = lo.ToPtr(strconv.Itoa(goodreadsBook.BestEdition.PublicationYear))
 	}
 
 	var imageUrl *string
@@ -88,8 +95,8 @@ func goodreadsBookToBookMetadata(goodreadsBook goodreads.Book) BookMetadata {
 		// Work Fields
 		Title:         goodreadsBook.BestEdition.Title(),
 		Subtitle:      subtitle,
-		Author:        authorName,
-		PublishedYear: lo.ToPtr(strconv.Itoa(goodreadsBook.Work.PublicationYear)),
+		Author:        author,
+		PublishedYear: publicationYear,
 		// Edition Fields
 		Isbn:        goodreadsBook.BestEdition.ISBN,
 		Cover:       imageUrl,
