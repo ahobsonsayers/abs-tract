@@ -21,7 +21,7 @@ var (
 
 	// Regex to match alternative cover preamble in description.
 	// e.g. Harry Potter and the Chamber of Secrets (Harry Potter, #2)
-	descriptionAlternativeCoverRegex = regexp.MustCompile(`^<i>.*?[Aa]lternat(iv)?e cover.*?</i>`)
+	descriptionAlternativeCoverRegex = regexp.MustCompile(`^<i>.*?[Aa]lternat(iv)?e [Cc]over.*?</i>`)
 
 	breakTagRegex = regexp.MustCompile(`<br\s*/?>`)
 )
