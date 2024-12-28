@@ -14,7 +14,7 @@ import (
 
 var (
 	// These are dirty workarounds, but they seem to work
-	alternativeCoverRegex = regexp.MustCompile(`^<i>.*?[Aa]lternat(iv)?e cover.*?<\/i>`)
+	alternativeCoverRegex = regexp.MustCompile(`^<i>.*?[Aa]lternat(iv)?e cover.*?</i>`)
 	breakTagRegex         = regexp.MustCompile(`<br\s*/?>`)
 	lastBracketRegex      = regexp.MustCompile(`^(.*)(\([^\(\)]*\))([^()]*)$`)
 )
