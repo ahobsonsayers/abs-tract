@@ -8,7 +8,7 @@ Please open issues for feature requests or new provider suggestions!
 
 #### Why the name abs-tract?
 
-I'm glad you asked - It's a fun play on words. AudiobookShelf is often abbreviated to ABS. Books can have abstracts. Plus, we are abstracting away the provision of metadata from AudiobookShelf. Therefore, abs-tract seemed suitably punny 💩
+I'm glad you asked - It's a fun play on words. AudiobookShelf is often abbreviated to ABS. Books can have abstracts. Plus, we are abstracting away the provision of metadata from AudiobookShelf. Therefore, abs-tract seemed suitably punny
 
 ## Providers
 
