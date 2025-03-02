@@ -21,8 +21,10 @@ linters-settings:
   gocritic:
     enable-all: true
     disabled-checks:
+      - commentedOutCode
       - hugeParam # TODO Reenable this?
       - rangeValCopy
+      - whyNoLint
 
   revive:
     enable-all-rules: true
@@ -31,13 +33,21 @@ linters-settings:
         disabled: true
 
       - name: cognitive-complexity
-        arguments: [10]
+        disabled: true
 
       - name: empty-lines
         disabled: true
 
       - name: line-length-limit
         arguments: [120]
+
+      - name: max-public-structs
+        disabled: true
+
+      - name: unhandled-error
+        arguments:
+          - fmt.Printf
+          - fmt.Println
 
       - name: var-naming
         arguments:
