@@ -35,7 +35,7 @@ func searchKindleBooks(
 	title string,
 	author *string,
 ) ([]BookMetadata, error) {
-	kindleClient, err := kindle.NewClient(nil, lo.ToPtr(string(countryCode)))
+	kindleClient, err := kindle.NewClient(lo.ToPtr(string(countryCode)))
 	if err != nil {
 		return nil, err
 	}

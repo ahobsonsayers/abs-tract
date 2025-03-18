@@ -29,8 +29,16 @@ func sortBookByAuthorSimilarity(books []Book, author string) {
 		authorSimilarities[book.BestEdition.Id] = bestAuthorSimilarity
 	}
 
-	slices.SortStableFunc(books, func(i, j Book) bool {
-		return authorSimilarities[i.BestEdition.Id] > authorSimilarities[j.BestEdition.Id]
+	slices.SortStableFunc(books, func(i, j Book) int {
+		authorSimilarity1 := authorSimilarities[i.BestEdition.Id]
+		authorSimilarity2 := authorSimilarities[j.BestEdition.Id]
+		if authorSimilarity1 > authorSimilarity2 {
+			return -1
+		}
+		if authorSimilarity1 < authorSimilarity2 {
+			return 1
+		}
+		return 0
 	})
 }
 
