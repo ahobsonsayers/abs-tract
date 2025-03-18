@@ -2,11 +2,11 @@ package kindle
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/ahobsonsayers/abs-tract/utils"
+	"github.com/imroc/req/v3"
 	"github.com/samber/lo"
 )
 
@@ -23,13 +23,11 @@ var countryAmazonURLs = map[string]*url.URL{
 	"us": defaultAmazonURL,
 }
 
-// If client is nil, the default http client will be used.
+// Creates a new kindle client.
 // If country code is nil or unset, amazon.com will be used as the url.
 // Will return an error if the country code is invalid.
-func NewClient(client *http.Client, countryCode *string) (*Client, error) {
-	if client == nil {
-		client = http.DefaultClient
-	}
+func NewClient(countryCode *string) (*Client, error) {
+	client := req.C().ImpersonateFirefox()
 
 	amazonUrl := defaultAmazonURL
 	if countryCode != nil && *countryCode != "" {

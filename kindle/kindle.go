@@ -2,10 +2,11 @@ package kindle
 
 import (
 	"context"
-	"net/http"
+	"fmt"
 	"net/url"
 
 	"github.com/ahobsonsayers/abs-tract/utils"
+	"github.com/imroc/req/v3"
 	"github.com/samber/lo"
 	"golang.org/x/net/html"
 )
@@ -16,13 +17,13 @@ var (
 	defaultAmazonURL = lo.Must(url.Parse(DefaultAmazonURL))
 
 	DefaultClient = &Client{
-		client:    http.DefaultClient,
+		client:    req.C().ImpersonateFirefox(),
 		amazonUrl: utils.CloneURL(defaultAmazonURL),
 	}
 )
 
 type Client struct {
-	client    *http.Client
+	client    *req.Client
 	amazonUrl *url.URL
 }
 
@@ -43,22 +44,12 @@ func (c *Client) get(
 	requestUrl = requestUrl.JoinPath(path)
 	requestUrl.RawQuery = queryParams.Encode()
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestUrl.String(), http.NoBody)
-	if err != nil {
-		return nil, err
-	}
-
-	request.Header.Set("User-Agent", "") // Amazon blocks some user agents
-
-	response, err := http.DefaultClient.Do(request)
+	response, err := c.client.R().SetContext(ctx).Get(requestUrl.String())
 	if err != nil {
 		return nil, nil
 	}
-	defer response.Body.Close()
-
-	httpError := utils.HTTPResponseError(response)
-	if httpError != nil {
-		return nil, httpError
+	if !response.IsSuccessState() {
+		return nil, fmt.Errorf("%s: %s", response.GetStatus(), response.String())
 	}
 
 	htmlResponse, err := html.Parse(response.Body)
