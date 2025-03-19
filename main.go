@@ -7,7 +7,7 @@ import (
 	"github.com/ahobsonsayers/abs-tract/server"
 )
 
-//go:generate go run github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen -config .oapigen.yaml schema/openapi.yaml
+//go:generate go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen -config .oapigen.yaml schema/openapi.yaml
 
 const serverAddress = "0.0.0.0:5555"
 

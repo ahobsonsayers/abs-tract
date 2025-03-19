@@ -1,5 +1,5 @@
 # oapi-codegen configuration
-# https://github.com/deepmap/oapi-codegen/blob/master/pkg/codegen/configuration.go
+# https://github.com/oapi-codegen/oapi-codegen/blob/master/pkg/codegen/configuration.go
 package: server
 generate:
   chi-server: true

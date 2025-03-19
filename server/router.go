@@ -24,7 +24,7 @@ func NewRouter() (http.Handler, error) {
 
 	// Set server endpoint to the route. This ensures request validation
 	// doesn't fail in the validation middleware.
-	// See: https://github.com/deepmap/oapi-codegen/issues/1123
+	// See: https://github.com/oapi-codegen/oapi-codegen/issues/1123
 	spec.Servers = openapi3.Servers{&openapi3.Server{URL: "/"}}
 
 	// Create router
