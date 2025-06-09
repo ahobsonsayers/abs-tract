@@ -37,3 +37,40 @@ func TestUnmarshalGenres(t *testing.T) {
 	expectedGenres := goodreads.Genres{"Fantasy", "Classic", "Fiction"}
 	require.Equal(t, expectedGenres, genres)
 }
+
+func TestBookUnmarshalBrTagReplacement(t *testing.T) {
+	testXML := `
+	<GoodreadsResponse>
+		<book>
+			<id>123</id>
+			<title>Test Book</title>
+			<description><![CDATA[This is a test description.<br />This should be on a new line.<br/>Another line.<br>Final line.]]></description>
+			<work>
+				<original_title>Test Book</original_title>
+				<ratings_sum>100</ratings_sum>
+				<ratings_count>10</ratings_count>
+			</work>
+			<popular_shelves>
+				<shelf name="fiction" count="100"/>
+			</popular_shelves>
+		</book>
+	</GoodreadsResponse>
+	`
+
+	var response struct {
+		Book goodreads.Book `xml:"book"`
+	}
+
+	err := xml.Unmarshal([]byte(testXML), &response)
+	require.NoError(t, err)
+
+	description := response.Book.BestEdition.Description
+	t.Logf("Description after processing: %q", description)
+
+	// Verify that <br> tags have been correctly converted to newlines
+	require.Contains(t, description, "test description.\nThis should be on a new line.\nAnother line.\nFinal line.")
+
+	// Verify that no HTML br tags remain
+	require.NotContains(t, description, "<br")
+	require.NotContains(t, description, "br>")
+}

@@ -141,7 +141,9 @@ func (e *Edition) Sanitise() {
 	// Break tags need to be specially handled to add new lines as html2text does
 	// not convert them to new lines properly
 	e.Description = descriptionAlternativeCoverRegex.ReplaceAllString(e.Description, "")
-	e.Description = breakTagRegex.ReplaceAllString(e.Description, "\n")
+	// HACK: html2text only handles <br> and <br/>, goodreads uses <br />
+	// replace unsupported br tag is a supported one
+	e.Description = breakTagRegex.ReplaceAllString(e.Description, "<br>")
 	e.Description = html2text.HTML2TextWithOptions(e.Description, html2text.WithUnixLineBreaks())
 	e.Description = strings.TrimSpace(e.Description)
 
