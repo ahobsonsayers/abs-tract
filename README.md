@@ -1,6 +1,6 @@
 # abs-tract
 
-This is an "all-in-one" book metadata provider for AudiobookShelf that can currently pull metadata from Goodreads and Kindle Store.
+This is an "all-in-one" book metadata provider for AudiobookShelf that can currently pull metadata from Goodreads, Kindle Store and BookBeat.
 
 Current metadata providers plan to be improved, and other metadata providers are on the roadmap.
 
@@ -55,6 +55,35 @@ I'm glad you asked - It's a fun play on words. AudiobookShelf is often abbreviat
 - Publish Year - of edition chosen by Amazon. **Not original publish year**
 - ASIN
 
+### BookBeat
+
+#### Pros:
+- High-quality covers (2048x2048)
+- Comprehensive metadata including narrators and duration
+- Supports multiple markets and languages
+- Format filtering (audiobook/ebook)
+
+#### Cons:
+- Content availability varies by market (country)
+- Some books may not be available in certain formats in all markets
+
+#### Metadata Provided:
+  - Title
+  - Subtitle
+  - Author(s)
+  - Narrator(s)
+  - Cover (2048x2048 might take a few seconds to appear)
+  - Description
+  - Duration (in minutes)
+  - ISBN
+  - Genres
+  - Language
+  - Series Name
+  - Series Position
+  - Publisher
+  - Published Year
+  - Tags
+
 ## Running
 
 The best way to run abs-tract is to use Docker. To run abs-tract using Docker, use the following command:
@@ -85,6 +114,14 @@ curl --request GET \
 ADDRESS=localhost
 curl --request GET \
     --url "http://$ADDRESS:5555/kindle/uk/search?query=The+Hobbit&author=J.R.R.+Tolkien"
+```
+
+### BookBeat
+
+```bash
+ADDRESS=localhost
+curl --request GET \
+    --url "http://$ADDRESS:5555/bookbeat/uk/audiobook/en/search?query=The+Hobbit&author=J.R.R.+Tolkien"
 ```
 
 ## Setup with AudiobookShelf
@@ -123,6 +160,76 @@ Region can be one of the following:
 - jp - Japan
 - uk - United Kingdom
 - us - United States
+
+### BookBeat
+
+- Name: **BookBeat**
+- URL: `http://<your_address>:5555/bookbeat/<market>/<format>/<language>`
+  - e.g. `192.168.1.100:5555/bookbeat/uk/all/en,de`
+- Authorization Header Value: **Leave this unset**
+
+Market determines which BookBeat regional catalog to search. Different markets may have different book availability. Market can be one of the following:
+
+- at - Austria
+- be - Belgium
+- bg - Bulgaria
+- hr - Croatia
+- cy - Cyprus
+- cz - Czech Republic
+- dk - Denmark
+- ee - Estonia
+- fi - Finland
+- fr - France
+- de - Germany
+- gr - Greece
+- hu - Hungary
+- ie - Ireland
+- it - Italy
+- lv - Latvia
+- lt - Lithuania
+- lu - Luxembourg
+- mt - Malta
+- nl - Netherlands
+- no - Norway
+- pl - Poland
+- pt - Portugal
+- ro - Romania
+- sk - Slovakia
+- si - Slovenia
+- es - Spain
+- se - Sweden
+- ch - Switzerland
+- uk - United Kingdom
+
+Format filters results by book type. Note that not all books are available in all formats in every market. Format can be one of the following:
+
+- all - Search both audiobooks and ebooks
+- audiobook - Search audiobooks only
+- ebook - Search ebooks only
+
+Language can be "all" or comma separated list of:
+
+- en - English
+- de - German
+- ar - Arabic
+- eu - Basque
+- ca - Catalan
+- cs - Czech
+- da - Danish
+- nl - Dutch
+- et - Estonian
+- fi - Finnish
+- fr - French
+- hu - Hungarian
+- it - Italian
+- nb - Norwegian
+- nn - Norwegian Nynorsk
+- pl - Polish
+- pt - Portuguese
+- ru - Russian
+- es - Spanish
+- sv - Swedish
+- tr - Turkish
 
 ## FAQ
 

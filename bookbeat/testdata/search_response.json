@@ -1,0 +1,130 @@
+{
+    "iscapped": false,
+    "count": 1,
+    "sort": {
+        "sortby": "relevance",
+        "sortorder": "desc"
+    },
+    "filter": {
+        "titles": [],
+        "languages": [
+            "english"
+        ],
+        "authors": [],
+        "narrators": [],
+        "translators": [],
+        "formats": [],
+        "series": [],
+        "categories": [],
+        "contenttypetags": [],
+        "badgeids": [],
+        "bookids": [],
+        "iskid": false,
+        "includeerotic": false
+    },
+    "explanations": [],
+    "filteroptions": [
+        "language",
+        "format"
+    ],
+    "_links": {
+        "self": {
+            "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&sortby=relevance&sortorder=desc&offset=0&limit=50&v=14",
+            "method": "GET"
+        },
+        "sort": [
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&offset=0&limit=50&sortby=relevance&sortorder=desc&v=14",
+                "method": "GET",
+                "title": "relevance|desc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&offset=0&limit=50&sortby=publishdate&sortorder=desc&v=14",
+                "method": "GET",
+                "title": "publishdate|desc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&offset=0&limit=50&sortby=publishdate&sortorder=asc&v=14",
+                "method": "GET",
+                "title": "publishdate|asc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&offset=0&limit=50&sortby=rating&sortorder=desc&v=14",
+                "method": "GET",
+                "title": "rating|desc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&offset=0&limit=50&sortby=title&sortorder=asc&v=14",
+                "method": "GET",
+                "title": "title|asc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=Harry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&kid=false&includeerotic=false&offset=0&limit=50&sortby=author_lastname&sortorder=asc&v=14",
+                "method": "GET",
+                "title": "author_lastname|asc"
+            }
+        ]
+    },
+    "_embedded": {
+        "books": [
+            {
+                "id": 38059,
+                "title": "Harry Potter and the Philosopher's Stone",
+                "description": "Stephen Fry brings the richness of these magical stories to life in the original British recordings.<br><br>Turning the envelope over, his hand trembling, Harry saw a purple wax seal bearing a coat of arms; a lion, an eagle, a badger and a snake surrounding a large letter 'H'.<br><br>Treat your ears to a performance so rich and captivating you'll imagine yourself in the halls of Hogwarts. Wherever you listen, the unmistakable voice of Stephen Fry is guaranteed to guide you ever more deeply into this magical story and transport you to the heart of the adventure.<br><br>Harry Potter has never even heard of Hogwarts when the letters start dropping on the doormat at number four, Privet Drive. Addressed in green ink on yellowish parchment with a purple seal, they are swiftly confiscated by his grisly aunt and uncle. Then, on Harry's eleventh birthday, a great beetle-eyed giant of a man called Rubeus Hagrid bursts in with some astonishing news: Harry Potter is a wizard, and he has a place at Hogwarts School of Witchcraft and Wizardry. An incredible adventure is about to begin!<br><br>Theme music composed by James Hannigan<br><br>Having become classics of our time, the Harry Potter stories never fail to bring comfort and escapism. With their message of hope, belonging and the enduring power of truth and love, the story of the Boy Who Lived continues to delight generations of new listeners.",
+                "image": "https://prod-bb-images.akamaized.net/book-covers/erimage-9781781102367-coresourcepottermore-2022-05-31t12-04.jpg?w=400",
+                "author": "J.K. Rowling",
+                "shareurl": "https://www.bookbeat.com/ee/book/38059",
+                "grade": 4.8,
+                "language": "English",
+                "audiobookisbn": "9781781102367",
+                "ebookisbn": "9781781100219",
+                "published": "2015-11-20T00:00:00+00:00",
+                "contenttypetags": [
+                    "contentsynch",
+                    "unabridged"
+                ],
+                "audiobooksinglesale": null,
+                "ebooksinglesale": null,
+                "series": {
+                    "id": 1585,
+                    "name": "Harry Potter",
+                    "partnumber": 1
+                },
+                "_links": {
+                    "self": {
+                        "href": "https://edge.bookbeat.com/api/books/372/38059",
+                        "method": "GET"
+                    },
+                    "nextcontent": {
+                        "href": "https://api.bookbeat.com/api/nextcontentviews/38059",
+                        "method": "GET"
+                    }
+                },
+                "topbadges": [
+                    {
+                        "id": "top10-category.372.20",
+                        "translationKey": "category-title-20",
+                        "type": "TopList",
+                        "icon": "top10"
+                    }
+                ],
+                "_embedded": {
+                    "contributors": [
+                        {
+                            "id": 366,
+                            "displayname": "J.K. Rowling",
+                            "role": "bb-author",
+                            "booksurl": "https://search-api.bookbeat.com/api/tabsearch/books?query=*&offset=0&limit=50&market=372&author=J.K.%20Rowling&v=14"
+                        },
+                        {
+                            "id": 7655,
+                            "displayname": "Stephen Fry",
+                            "role": "bb-narrator",
+                            "booksurl": "https://search-api.bookbeat.com/api/tabsearch?query=*&offset=0&limit=50&market=372&narrator=Stephen%20Fry&v=14"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
