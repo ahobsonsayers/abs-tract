@@ -17,7 +17,7 @@ var (
 	defaultAmazonURL = lo.Must(url.Parse(DefaultAmazonURL))
 
 	DefaultClient = &Client{
-		client:    req.C().ImpersonateFirefox(),
+		client:    req.C().ImpersonateChrome(),
 		amazonUrl: utils.CloneURL(defaultAmazonURL),
 	}
 )
