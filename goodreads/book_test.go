@@ -44,7 +44,7 @@ func TestBookUnmarshalBrTagReplacement(t *testing.T) {
 		<book>
 			<id>123</id>
 			<title>Test Book</title>
-			<description><![CDATA[This is a test description.<br />This should be on a new line.<br/>Another line.<br>Final line.]]></description>
+			<description><![CDATA[Test description<br />2. line<br/>3. line<br>4. line]]></description>
 			<work>
 				<original_title>Test Book</original_title>
 				<ratings_sum>100</ratings_sum>
@@ -68,7 +68,7 @@ func TestBookUnmarshalBrTagReplacement(t *testing.T) {
 	t.Logf("Description after processing: %q", description)
 
 	// Verify that <br> tags have been correctly converted to newlines
-	require.Contains(t, description, "test description.\nThis should be on a new line.\nAnother line.\nFinal line.")
+	require.Contains(t, description, "Test description\n2. line\n3. line\n4. line")
 
 	// Verify that no HTML br tags remain
 	require.NotContains(t, description, "<br")
