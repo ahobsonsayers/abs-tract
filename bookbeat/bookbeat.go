@@ -216,7 +216,7 @@ func (b *Bookbeat) Search(ctx context.Context, query string, author *string) ([]
 
 			// HACK: looks like ABS wants minutes and not seconds like its statet in the api definition
 			if bookResp.Audiobooklength > 0 {
-				bookResp.Audiobooklength = bookResp.Audiobooklength / 60
+				bookResp.Audiobooklength /= 60
 			}
 
 			// Create book structure with all metadata

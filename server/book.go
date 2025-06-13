@@ -157,8 +157,7 @@ func kindleBookToBookMetadata(kindleBook kindle.Book) BookMetadata {
 }
 
 func bookbeatBookToBookMetadata(bookbeatBook bookbeat.Book) BookMetadata {
-	var publishedYear *string
-	publishedYear = lo.ToPtr(strconv.Itoa(bookbeatBook.PublishedYear))
+	publishedYear := lo.ToPtr(strconv.Itoa(bookbeatBook.PublishedYear))
 
 	var series []SeriesMetadata
 	if bookbeatBook.Series != nil {

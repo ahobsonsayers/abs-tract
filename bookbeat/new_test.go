@@ -100,7 +100,7 @@ func TestNewClient_MultipleLanguages(t *testing.T) {
 	require.NotNil(t, client)
 
 	languages := []string{"english", "french", "hungarian", "arabic"}
-	assert.Equal(t, len(client.Languages()), len(languages))
+	assert.Len(t, client.Languages(), len(languages))
 	for _, language := range languages {
 		assert.Contains(t, client.Languages(), language)
 	}
