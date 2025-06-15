@@ -1,0 +1,74 @@
+{
+    "iscapped": false,
+    "count": 0,
+    "sort": {
+        "sortby": "relevance",
+        "sortorder": "desc"
+    },
+    "filter": {
+        "titles": [],
+        "languages": [
+            "english"
+        ],
+        "authors": [],
+        "narrators": [],
+        "translators": [],
+        "formats": [
+            "audiobook",
+            "ebook"
+        ],
+        "series": [],
+        "categories": [],
+        "contenttypetags": [],
+        "badgeids": [],
+        "bookids": [],
+        "iskid": false,
+        "includeerotic": false
+    },
+    "explanations": [],
+    "filteroptions": [
+        "language",
+        "format"
+    ],
+    "_links": {
+        "self": {
+            "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&sortby=relevance&sortorder=desc&offset=0&limit=50&v=14",
+            "method": "GET"
+        },
+        "sort": [
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&offset=0&limit=50&sortby=relevance&sortorder=desc&v=14",
+                "method": "GET",
+                "title": "relevance|desc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&offset=0&limit=50&sortby=publishdate&sortorder=desc&v=14",
+                "method": "GET",
+                "title": "publishdate|desc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&offset=0&limit=50&sortby=publishdate&sortorder=asc&v=14",
+                "method": "GET",
+                "title": "publishdate|asc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&offset=0&limit=50&sortby=rating&sortorder=desc&v=14",
+                "method": "GET",
+                "title": "rating|desc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&offset=0&limit=50&sortby=title&sortorder=asc&v=14",
+                "method": "GET",
+                "title": "title|asc"
+            },
+            {
+                "href": "https://search-api.bookbeat.com/api/tabsearch/books?query=asdfHarry%20Potter%20and%20the%20Philosopher%27s%20Stone&market=372&language=English&format=audiobook&format=ebook&kid=false&includeerotic=false&offset=0&limit=50&sortby=author_lastname&sortorder=asc&v=14",
+                "method": "GET",
+                "title": "author_lastname|asc"
+            }
+        ]
+    },
+    "_embedded": {
+        "books": []
+    }
+}

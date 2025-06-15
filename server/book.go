@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/ahobsonsayers/abs-tract/bookbeat"
 	"github.com/ahobsonsayers/abs-tract/goodreads"
 	"github.com/ahobsonsayers/abs-tract/kindle"
 	"github.com/samber/lo"
@@ -53,6 +54,37 @@ func searchKindleBooks(
 	books := make([]BookMetadata, 0, len(kindleBooks))
 	for _, kindleBook := range kindleBooks {
 		book := kindleBookToBookMetadata(kindleBook)
+		books = append(books, book)
+	}
+
+	return books, nil
+}
+
+func searchBookbeatBooks(
+	ctx context.Context,
+	marketStr BookbeatMarket,
+	formatStr BookbeatFormat,
+	languagesStr BookbeatLanguageCodes,
+	title string,
+	author *string,
+) ([]BookMetadata, error) {
+
+	market := string(marketStr)
+	format := string(formatStr)
+	languages := string(languagesStr)
+	bookbeatClient, err := bookbeat.NewClient(market, format, languages)
+	if err != nil {
+		return nil, err
+	}
+
+	bookbeatBooks, err := bookbeatClient.Search(ctx, title, author)
+	if err != nil {
+		return nil, err
+	}
+
+	books := make([]BookMetadata, 0, len(bookbeatBooks))
+	for _, bookbeatBook := range bookbeatBooks {
+		book := bookbeatBookToBookMetadata(bookbeatBook)
 		books = append(books, book)
 	}
 
@@ -121,5 +153,35 @@ func kindleBookToBookMetadata(kindleBook kindle.Book) BookMetadata {
 		Author:        &kindleBook.Author,
 		Cover:         &kindleBook.Cover,
 		PublishedYear: publishedYear,
+	}
+}
+
+func bookbeatBookToBookMetadata(bookbeatBook bookbeat.Book) BookMetadata {
+	publishedYear := lo.ToPtr(strconv.Itoa(bookbeatBook.PublishedYear))
+
+	var series []SeriesMetadata
+	if bookbeatBook.Series != nil {
+		series = make([]SeriesMetadata, 0, 1)
+		series = append(series, SeriesMetadata{
+			Series:   bookbeatBook.Series.Series,
+			Sequence: lo.ToPtr(strconv.Itoa(bookbeatBook.Series.Sequence)),
+		})
+	}
+
+	return BookMetadata{
+		Author:        &bookbeatBook.Authors,
+		Cover:         &bookbeatBook.Cover,
+		Description:   &bookbeatBook.Description,
+		Duration:      &bookbeatBook.Duration,
+		Genres:        &bookbeatBook.Genres,
+		Isbn:          &bookbeatBook.ISBN,
+		Language:      &bookbeatBook.Language,
+		Narrator:      &bookbeatBook.Narrators,
+		PublishedYear: publishedYear,
+		Publisher:     &bookbeatBook.Publisher,
+		Series:        &series,
+		Tags:          &bookbeatBook.Tags,
+		Title:         bookbeatBook.Title,
+		Subtitle:      &bookbeatBook.Subtitle,
 	}
 }

@@ -1,0 +1,254 @@
+{
+    "id": 38059,
+    "title": "Harry Potter and the Philosopher's Stone",
+    "subtitle": null,
+    "originaltitle": null,
+    "author": "J.K. Rowling",
+    "shareurl": "https://www.bookbeat.com/ee/book/38059",
+    "summary": "Stephen Fry brings the richness of these magical stories to life in the original British recordings.<br><br>Turning the envelope over, his hand trembling, Harry saw a purple wax seal bearing a coat of arms; a lion, an eagle, a badger and a snake surrounding a large letter 'H'.<br><br>Treat your ears to a performance so rich and captivating you'll imagine yourself in the halls of Hogwarts. Wherever you listen, the unmistakable voice of Stephen Fry is guaranteed to guide you ever more deeply into this magical story and transport you to the heart of the adventure.<br><br>Harry Potter has never even heard of Hogwarts when the letters start dropping on the doormat at number four, Privet Drive. Addressed in green ink on yellowish parchment with a purple seal, they are swiftly confiscated by his grisly aunt and uncle. Then, on Harry's eleventh birthday, a great beetle-eyed giant of a man called Rubeus Hagrid bursts in with some astonishing news: Harry Potter is a wizard, and he has a place at Hogwarts School of Witchcraft and Wizardry. An incredible adventure is about to begin!<br><br>Theme music composed by James Hannigan<br><br>Having become classics of our time, the Harry Potter stories never fail to bring comfort and escapism. With their message of hope, belonging and the enduring power of truth and love, the story of the Boy Who Lived continues to delight generations of new listeners.",
+    "grade": 4.8,
+    "rating": {
+        "ratingValue": 4.8,
+        "numberOfRatings": 18612,
+        "ratingDistribution": {
+            "1": 116,
+            "2": 43,
+            "3": 314,
+            "4": 2034,
+            "5": 16105
+        }
+    },
+    "narratingRating": {
+        "ratingValue": 4.9,
+        "numberOfRatings": 12579,
+        "ratingDistribution": {
+            "1": 74,
+            "2": 44,
+            "3": 180,
+            "4": 903,
+            "5": 11378
+        }
+    },
+    "cover": "https://prod-bb-images.akamaized.net/book-covers/erimage-9781781102367-coresourcepottermore-2022-05-31t12-04.jpg?w=400",
+    "narrator": "Stephen Fry",
+    "translator": null,
+    "language": "English",
+    "published": "2015-11-20T00:00:00+00:00",
+    "originalpublishyear": 2015,
+    "ebooklength": 281,
+    "ebookduration": 32997,
+    "audiobooklength": 30334,
+    "genres": [
+        {
+            "genreid": 20,
+            "name": "Fantasy",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/20/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 84,
+            "name": "Books for Children",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/84/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 87,
+            "name": "Books for Children: from 6 years",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/87/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 94,
+            "name": "Adventure Stories for Children",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/94/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 96,
+            "name": "Ghosts & Supernatural for Children",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/96/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 106,
+            "name": "English",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/106/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 109,
+            "name": "Fantasy & Science fiction",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/109/books?offset=0&limit=50"
+        },
+        {
+            "genreid": 111,
+            "name": "Children and YA",
+            "parentid": null,
+            "booksurl": "https://api.bookbeat.com/api/categories/111/books?offset=0&limit=50"
+        }
+    ],
+    "editions": [
+        {
+            "id": 56072,
+            "isbn": "9781781102367",
+            "format": "audioBook",
+            "language": "",
+            "published": "2015-11-20T00:00:00+00:00",
+            "bookBeatPublishDate": "2015-11-20T00:00:00+00:00",
+            "bookBeatUnpublishDate": null,
+            "availablefrom": "2015-11-20T00:00:00+00:00",
+            "publisher": "Pottermore Publishing",
+            "copyrightOwners": [
+                {
+                    "year": 1997,
+                    "name": "J.K. Rowling"
+                }
+            ],
+            "contributors": [
+                {
+                    "id": 366,
+                    "firstname": "J.K.",
+                    "lastname": "Rowling",
+                    "displayname": "J.K. Rowling",
+                    "role": "bb-author",
+                    "description": null,
+                    "booksurl": "https://api.bookbeat.com/api/search/books?offset=0&limit=50&author=J.K.%20Rowling&sortby=relevance&sortorder=desc"
+                },
+                {
+                    "id": 7655,
+                    "firstname": "Stephen",
+                    "lastname": "Fry",
+                    "displayname": "Stephen Fry",
+                    "role": "bb-narrator",
+                    "description": null,
+                    "booksurl": "https://api.bookbeat.com/api/search/books?offset=0&limit=50&narrator=Stephen%20Fry&sortby=relevance&sortorder=desc"
+                }
+            ],
+            "previewenabled": true,
+            "singlesale": null,
+            "accessibilityinfo": null
+        },
+        {
+            "id": 262287,
+            "isbn": "9781781100219",
+            "format": "eBook",
+            "language": "",
+            "published": "2015-12-08T00:00:00+00:00",
+            "bookBeatPublishDate": "2015-12-08T00:00:00+00:00",
+            "bookBeatUnpublishDate": null,
+            "availablefrom": "2015-12-08T00:00:00+00:00",
+            "publisher": "Pottermore Publishing",
+            "copyrightOwners": [],
+            "contributors": [
+                {
+                    "id": 366,
+                    "firstname": "J.K.",
+                    "lastname": "Rowling",
+                    "displayname": "J.K. Rowling",
+                    "role": "bb-author",
+                    "description": null,
+                    "booksurl": "https://api.bookbeat.com/api/search/books?offset=0&limit=50&author=J.K.%20Rowling&sortby=relevance&sortorder=desc"
+                }
+            ],
+            "previewenabled": false,
+            "singlesale": null,
+            "accessibilityinfo": null
+        }
+    ],
+    "upcomingeditions": [],
+    "markets": [
+        "Greece",
+        "Netherlands",
+        "Belgium",
+        "Hungary",
+        "Romania",
+        "Switzerland",
+        "Austria",
+        "Uk",
+        "Denmark",
+        "Sweden",
+        "Norway",
+        "Poland",
+        "Germany",
+        "Portugal",
+        "Luxembourg",
+        "Ireland",
+        "Malta",
+        "Cyprus",
+        "Finland",
+        "Bulgaria",
+        "Lithuania",
+        "Latvia",
+        "Estonia",
+        "Croatia",
+        "Slovenia",
+        "Czechrepublic",
+        "Slovakia"
+    ],
+    "series": {
+        "count": 7,
+        "partindex": 1,
+        "prevbookid": null,
+        "nextbookid": 38060,
+        "id": 1585,
+        "name": "Harry Potter",
+        "partnumber": 1,
+        "url": "https://api.bookbeat.com/api/series/1585?offset=0&limit=25"
+    },
+    "contenttypetags": [
+        "contentsynch"
+    ],
+    "relatedreadingsurl": "https://api.bookbeat.com/api/booklists/relatedreadings/Estonia/38059?offset=0&limit=25",
+    "nextcontenturl": "https://api.bookbeat.com/api/nextcontentviews/38059",
+    "Type": 0,
+    "bookappviewurl": "https://api.bookbeat.com/api/bookview/Estonia/38059",
+    "badges": [
+        {
+            "id": "top10-category.372.20",
+            "translationKey": "category-title-20",
+            "icon": "top10",
+            "type": "TopList"
+        },
+        {
+            "id": "top10-category.372.84",
+            "translationKey": "category-title-84",
+            "icon": "top10",
+            "type": "TopList"
+        },
+        {
+            "id": "top100.372",
+            "translationKey": "badge-all-time-high",
+            "icon": "top100",
+            "type": "TopList"
+        }
+    ],
+    "swiftWords": [
+        {
+            "id": 35,
+            "translationKey": "swift-written-wellwritten"
+        },
+        {
+            "id": 16,
+            "translationKey": "swift-book-fantastic"
+        },
+        {
+            "id": 63,
+            "translationKey": "swift-impact-entertaining"
+        }
+    ],
+    "narratingSwiftWords": [
+        {
+            "id": 51,
+            "translationKey": "swift-narration-elevates-book"
+        },
+        {
+            "id": 46,
+            "translationKey": "swift-narration-captivating"
+        },
+        {
+            "id": 42,
+            "translationKey": "swift-narration-expressive"
+        }
+    ]
+}

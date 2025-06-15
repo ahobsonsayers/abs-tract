@@ -67,6 +67,42 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /bookbeat/{market}/{format}/{languages}/search:
+    get:
+      operationId: searchBookbeat
+      summary: Search for books by format and languages using bookbeat
+      description: Search for books using bookbeat filtered by format and languages
+      parameters:
+        - name: market
+          in: path
+          description: Country code of the market to use
+          schema:
+              $ref: "#/components/schemas/BookbeatMarket"
+        - name: format
+          in: path
+          required: true
+          schema:
+              $ref: "#/components/schemas/BookbeatFormat"
+          description: Book format (audiobook, ebook, or all)
+        - name: languages
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/BookbeatLanguageCodes"
+          description: Comma-separated list of language codes or "all" (e.g., "en,de,fr" or "all")
+          example: "en,de,fr"
+        - $ref: "#/components/parameters/query"
+        - $ref: "#/components/parameters/author"
+      responses:
+        "200":
+          $ref: "#/components/responses/200"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   securitySchemes:
     api_key:
@@ -131,6 +167,22 @@ components:
           type: string
         sequence:
           type: string
+
+    BookbeatLanguageCodes:
+      type: string
+      description: Either "all" for all languages, or comma-separated list of valid language codes
+      pattern: '^(all|(en|de|ar|eu|ca|cs|da|nl|et|fi|fr|hu|it|nb|nn|pl|pt|ru|es|sv|tr)(,(en|de|ar|eu|ca|cs|da|nl|et|fi|fr|hu|it|nb|nn|pl|pt|ru|es|sv|tr))*)$'
+      example: "en,de,fr"
+
+    BookbeatFormat:
+      type: string
+      enum: ["audiobook", "ebook", "all"]
+      description: Book format type or all formats
+
+    BookbeatMarket:
+      type: string
+      enum: ["gr","nl","be","fr","es","hu","it","ro","ch","at","uk","dk","se","no","pl","de","pt","lu","ie","mt","cy","fi","bg","lt","lv","ee","hr","si","cz","sk"]
+      description: Market country code
 
   parameters:
     query:
