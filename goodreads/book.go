@@ -88,10 +88,10 @@ type Work struct {
 	PublicationDay   int `xml:"original_publication_day"`
 
 	// Ratings
-	RatingsSum         int    `xml:"ratings_sum"`
-	RatingsCount       int    `xml:"ratings_count"`
-	ReviewsCount       int    `xml:"text_reviews_count"`
-	RatingDistribution string `xml:"rating_dist"`
+	RatingsSum         float64 `xml:"ratings_sum"`
+	RatingsCount       int     `xml:"ratings_count"`
+	ReviewsCount       int     `xml:"text_reviews_count"`
+	RatingDistribution string  `xml:"rating_dist"`
 }
 
 // Title is the full title with any subtitle and series removed.
@@ -105,7 +105,7 @@ func (w Work) Subtitle() string {
 }
 
 func (w Work) AverageRating() float64 {
-	averageRating := float64(w.RatingsSum) / float64(w.RatingsCount)
+	averageRating := w.RatingsSum / float64(w.RatingsCount)
 	return math.Round(averageRating*100) / 100 // Round to two decimal places
 }
 

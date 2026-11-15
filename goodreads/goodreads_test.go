@@ -50,6 +50,6 @@ func checkTheHobbitBookDetails(t *testing.T, book goodreads.Book) {
 	require.Equal(t, "English", book.BestEdition.Language)
 	require.Equal(t, TheHobbitAuthor, book.Authors[0].Name)
 	require.Equal(t, "Middle Earth", book.Series[0].Series.Title)
-	require.Equal(t, "0", *book.Series[0].BookPosition)
+	require.Equal(t, "1", *book.Series[0].BookPosition)
 	require.Equal(t, goodreads.Genres{"Fantasy", "Classic", "Fiction"}, book.Genres)
 }

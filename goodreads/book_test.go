@@ -47,7 +47,7 @@ func TestBookUnmarshalBrTagReplacement(t *testing.T) {
 			<description><![CDATA[Test description<br />2. line<br/>3. line<br>4. line]]></description>
 			<work>
 				<original_title>Test Book</original_title>
-				<ratings_sum>100</ratings_sum>
+				<ratings_sum>100.0</ratings_sum>
 				<ratings_count>10</ratings_count>
 			</work>
 			<popular_shelves>
