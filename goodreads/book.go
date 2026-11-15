@@ -105,7 +105,7 @@ func (w Work) Subtitle() string {
 }
 
 func (w Work) AverageRating() float64 {
-	averageRating := float64(w.RatingsSum) / float64(w.RatingsCount)
+	averageRating := w.RatingsSum / float64(w.RatingsCount)
 	return math.Round(averageRating*100) / 100 // Round to two decimal places
 }
 
